@@ -15,6 +15,7 @@ const config: Config = {
           light: "#A3D0E3",
           deep: "#1977C9", // primary CTA / deep blue
           gray: "#808080",
+          vital: "#10B981", // vital-sign green accent
           50: "#f2fafd",
           100: "#e2f3f9",
           200: "#c2e6f2",

@@ -16,5 +16,6 @@ export const BRAND = {
     light: "#A3D0E3",
     deep: "#1977C9",
     gray: "#808080",
+    vital: "#10B981",
   },
 } as const;
