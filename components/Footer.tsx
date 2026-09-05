@@ -58,6 +58,11 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           </span>
           <span>{dict.footer.langNote}</span>
         </div>
+        <div className="mt-4 text-center sm:text-right">
+          <Link href={p("/admin")} className="text-xs text-slate-600 transition hover:text-slate-300">
+            {dict.admin.brand}
+          </Link>
+        </div>
       </div>
     </footer>
   );

@@ -26,7 +26,14 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+
+# app data (sqlite db + uploaded attachments)
+/data
+
+# prisma generated client
+/node_modules/.prisma
 
 # vercel
 .vercel

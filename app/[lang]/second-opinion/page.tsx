@@ -42,7 +42,7 @@ export default function SecondOpinionPage({ params }: { params: { lang: string }
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-slate-300">{s.hero.subtitle}</p>
             <Link
-              href={p("/register/patient")}
+              href={p("/second-opinion/apply")}
               className="btn mt-9 bg-white text-brand-deep hover:bg-brand-50"
             >
               {s.hero.cta}
@@ -156,7 +156,7 @@ export default function SecondOpinionPage({ params }: { params: { lang: string }
         </Reveal>
 
         <div className="mt-12 text-center">
-          <Link href={p("/register/patient")} className="btn-primary">
+          <Link href={p("/second-opinion/apply")} className="btn-primary">
             {s.hero.cta}
             <ArrowRight className="h-4 w-4" />
           </Link>
