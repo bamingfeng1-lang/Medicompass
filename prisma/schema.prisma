@@ -49,3 +49,18 @@ model Admin {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+model Inquiry {
+  id          String   @id @default(cuid())
+  serviceSlug String
+  serviceName String
+  fullName    String
+  phone       String
+  email       String?
+  message     String?
+  lang        String   @default("zh")
+  status      String   @default("new") // new | contacted
+  createdAt   DateTime @default(now())
+
+  @@index([createdAt])
+}

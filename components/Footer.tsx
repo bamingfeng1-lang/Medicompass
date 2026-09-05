@@ -21,6 +21,8 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           <FooterCol title={dict.footer.quickLinks}>
             <FooterLink href={p("")}>{dict.nav.home}</FooterLink>
             <FooterLink href={p("/second-opinion")}>{dict.nav.secondOpinion}</FooterLink>
+            <FooterLink href={p("/services")}>{dict.nav.services}</FooterLink>
+            <FooterLink href={p("/overseas-domestic")}>{dict.nav.overseasDomestic}</FooterLink>
             <FooterLink href={p("/about")}>{dict.nav.about}</FooterLink>
           </FooterCol>
 

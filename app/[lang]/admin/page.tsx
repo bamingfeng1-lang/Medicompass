@@ -34,6 +34,7 @@ export default async function AdminListPage({ params }: { params: { lang: string
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
   const a = t.admin;
+  const si = t.services.admin;
 
   const apps = await prisma.application.findMany({
     orderBy: { createdAt: "desc" },
@@ -53,6 +54,16 @@ export default async function AdminListPage({ params }: { params: { lang: string
           <h1 className="mt-3 text-3xl font-bold tracking-tight text-brand-950">{a.listTitle}</h1>
         </div>
         <LogoutButton lang={lang} label={a.logout} />
+      </div>
+
+      {/* section switcher */}
+      <div className="mb-8 flex gap-2">
+        <span className="rounded-full bg-brand-gradient px-4 py-2 text-sm font-medium text-white">
+          {si.navApplications}
+        </span>
+        <Link href={`/${lang}/admin/inquiries`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
+          {si.navInquiries}
+        </Link>
       </div>
 
       {apps.length === 0 ? (

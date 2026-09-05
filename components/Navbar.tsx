@@ -23,6 +23,8 @@ export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
     { href: p(""), label: dict.nav.home },
     { href: p("/packages"), label: dict.nav.packages },
     { href: p("/second-opinion"), label: dict.nav.secondOpinion },
+    { href: p("/services"), label: dict.nav.services },
+    { href: p("/overseas-domestic"), label: dict.nav.overseasDomestic },
     { href: p("/about"), label: dict.nav.about },
   ];
 
