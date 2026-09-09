@@ -1,13 +1,23 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { Section } from "@/components/ui/Section";
-import { LogoutButton } from "@/components/admin/LogoutButton";
 import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
-import { prisma } from "@/lib/db";
+import { serverFetch } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
+
+type InquiryListItem = {
+  id: number;
+  serviceSlug: string;
+  serviceName: string;
+  fullName: string;
+  phone: string;
+  email: string | null;
+  message: string | null;
+  lang: string;
+  status: string;
+  createdAt: string;
+};
 
 export function generateMetadata({ params }: { params: { lang: string } }): Metadata {
   const lang = isLocale(params.lang) ? params.lang : "zh";
@@ -18,34 +28,21 @@ export default async function AdminInquiriesPage({ params }: { params: { lang: s
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
-  const a = t.admin;
   const si = t.services.admin;
 
-  const inquiries = await prisma.inquiry.findMany({ orderBy: { createdAt: "desc" } });
+  const res = await serverFetch("/api/admin/inquiries");
+  if (res.status === 401) redirect(`/${lang}/admin/login`);
+  const inquiries: InquiryListItem[] = res.ok ? await res.json() : [];
 
-  const fmt = (d: Date) =>
+  const fmt = (d: string) =>
     new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", {
       year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit",
-    }).format(d);
+    }).format(new Date(d));
 
   return (
-    <Section className="bg-slate-50">
-      <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <p className="eyebrow border-brand-100 bg-brand-50 text-brand-deep">{a.brand}</p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-brand-950">{si.listTitle}</h1>
-        </div>
-        <LogoutButton lang={lang} label={a.logout} />
-      </div>
-
-      {/* section switcher */}
-      <div className="mb-8 flex gap-2">
-        <Link href={`/${lang}/admin`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
-          {si.navApplications}
-        </Link>
-        <span className="rounded-full bg-brand-gradient px-4 py-2 text-sm font-medium text-white">
-          {si.navInquiries}
-        </span>
+    <div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-brand-950">{si.listTitle}</h1>
       </div>
 
       {inquiries.length === 0 ? (
@@ -81,6 +78,6 @@ export default async function AdminInquiriesPage({ params }: { params: { lang: s
           </div>
         </div>
       )}
-    </Section>
+    </div>
   );
 }

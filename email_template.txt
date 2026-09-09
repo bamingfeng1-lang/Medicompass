@@ -1,0 +1,90 @@
+一：注册或提交了申请
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicompass Application Received</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f6f8fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .email-container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e1e4e8; }
+    .header { padding: 32px 40px 20px 40px; border-bottom: 1px solid #f0f2f5; }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-text { font-size: 20px; font-weight: 700; color: #0f2942; letter-spacing: 0.5px; }
+    .content-body { padding: 40px; }
+    .lang-section { margin-bottom: 40px; }
+    .lang-section:last-child { margin-bottom: 0; border-top: 1px dashed #e1e4e8; padding-top: 35px; }
+    h2 { font-size: 16px; font-weight: 600; color: #0f2942; margin-top: 0; margin-bottom: 18px; }
+    p { font-size: 14px; line-height: 1.6; color: #4a5568; margin: 0 0 16px 0; }
+    p:last-child { margin-bottom: 0; }
+    .highlight-box { background-color: #f0f7ff; border-left: 4px solid #0066cc; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+    .highlight-box p { color: #004494; font-weight: 500; }
+    .highlight-box-en { background-color: #f4fafd; border-left: 4px solid #00a3a3; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+    .highlight-box-en p { color: #006666; font-weight: 500; }
+    .sign-off { margin-top: 24px; font-size: 13px; color: #718096; line-height: 1.5; }
+    .footer { background-color: #fafbfc; padding: 24px 40px; text-align: center; border-top: 1px solid #f0f2f5; }
+    .footer p { font-size: 12px; color: #a0aec0; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="email-container">
+    <!-- 头部区域 -->
+    <div class="header">
+      <div class="logo-area">
+        <!-- 替换为您真实的原始Logo线上绝对路径 -->
+        <img src="https://medicomai.com" alt="Medicompass" width="36" height="36" style="display:block; border:0;">
+        <span class="logo-text">Medicompass 迈蒂康</span>
+      </div>
+    </div>
+
+    <!-- 邮件核心内容 -->
+    <div class="content-body">
+      
+      <!-- 中文部分 -->
+      <div class="lang-section">
+        <h2>尊敬的客户：</h2>
+        <p>您好！平台已成功收到您提交的国际第二诊疗意见申请及相关病历资料。感谢您对迈蒂康的信任。</p>
+        <p>面对健康的抉择，我们深知每一分钟的等待都至关重要。目前，我们的医学管理员正在对您上传的原始报告进行初步的整理与合规检查。</p>
+        
+        <div class="highlight-box">
+          <p>📌 我们的医学顾问将在未来 2 个工作日内通过电话或邮件与您取得联系，为您确认资料的完整性，并协助您匹配全球最对口的权威医学专家。</p>
+        </div>
+        
+        <p>在此期间，如果您有任何紧急补充资料或疑问，欢迎随时回复本封邮件。愿健康与您同行。</p>
+        
+        <div class="sign-off">
+          <strong>迈蒂康 (Medicompass) 全球服务团队</strong>
+        </div>
+      </div>
+
+      <!-- 英文部分 -->
+      <div class="lang-section">
+        <h2>Dear Customer,</h2>
+        <p>Hello! We have successfully received your application for an International Second Medical Opinion, along with your medical records submitted on the Medicompass platform. Thank you for your trust in us.</p>
+        <p>When facing critical health decisions, we deeply understand that every minute of waiting matters. Currently, our medical administrators are conducting an initial review and standardizing the medical documents you uploaded.</p>
+        
+        <div class="highlight-box-en">
+          <p>📌 Our medical consultant will contact you via phone or email within the next 2 business days to confirm the completeness of your data and assist in matching you with the most appropriate leading medical experts globally.</p>
+        </div>
+        
+        <p>Before our consultant reaches out to you, please feel free to reply to this email if you have any urgent updates or questions regarding your documents.</p>
+        
+        <div class="sign-off">
+          Best regards,<br>
+          <strong>The Medicompass Global Service Team</strong>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 页脚灰色安全提示区 -->
+    <div class="footer">
+      <p>This is an automated system notification. Please do not reply directly to this footer area.</p>
+      <p style="margin-top: 4px;">© 2026 Medicompass. All rights reserved.</p>
+    </div>
+  </div>
+
+</body>
+</html>
+

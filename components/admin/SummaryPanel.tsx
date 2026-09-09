@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Sparkles, Loader2, AlertTriangle } from "lucide-react";
 import type { Dictionary } from "@/lib/dictionaries";
+import { clientApi } from "@/lib/api";
 
 type Props = {
-  id: string;
+  id: number | string;
   dict: Dictionary;
   initialSummary: string | null;
   initialStatus: string;
@@ -24,7 +25,10 @@ export function SummaryPanel({ id, dict, initialSummary, initialStatus, initialE
   const generate = async () => {
     setRunning(true);
     try {
-      const res = await fetch(`/api/admin/applications/${id}/summarize`, { method: "POST" });
+      const res = await fetch(clientApi(`/api/admin/applications/${id}/summarize`), {
+        method: "POST",
+        credentials: "include",
+      });
       const data = await res.json();
       setSummary(data.aiSummary ?? null);
       setStatus(data.aiSummaryStatus ?? "failed");

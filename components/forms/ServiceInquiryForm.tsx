@@ -1,37 +1,59 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
+import { clientApi } from "@/lib/api";
 
 type Values = {
   fullName: string;
   phone: string;
   email: string;
   message: string;
+  needType: string;
 };
 
 export function ServiceInquiryForm({
   lang,
   dict,
   serviceSlug,
+  initialValues,
+  hideAgree = false,
+  isLoggedIn = false,
+  showNeedType = false,
+  defaultNeedType,
 }: {
   lang: Locale;
   dict: Dictionary;
   serviceSlug: string;
+  initialValues?: Partial<Values>;
+  hideAgree?: boolean;
+  isLoggedIn?: boolean;
+  showNeedType?: boolean;
+  defaultNeedType?: string;
 }) {
   const q = dict.services.inquiry;
+  const needTypeOptions = dict.register.fields.needTypeOptions;
 
   const [values, setValues] = useState<Values>({
-    fullName: "",
-    phone: "",
-    email: "",
+    fullName: initialValues?.fullName ?? "",
+    phone: initialValues?.phone ?? "",
+    email: initialValues?.email ?? "",
     message: "",
+    needType: defaultNeedType ?? needTypeOptions[0],
   });
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status === "done") {
+      successRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [status]);
 
   const set = (name: keyof Values, v: string) => {
     setValues((s) => ({ ...s, [name]: v }));
@@ -44,7 +66,7 @@ export function ServiceInquiryForm({
     if (!values.phone.trim()) e.phone = q.errorRequired;
     else if (!/^[\d+\-\s()]{6,20}$/.test(values.phone.trim())) e.phone = q.errorPhone;
     if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) e.email = q.errorEmail;
-    if (!agree) e.__agree = q.errorConsent;
+    if (!hideAgree && !agree) e.__agree = q.errorConsent;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -54,10 +76,16 @@ export function ServiceInquiryForm({
     if (!validate()) return;
     setStatus("submitting");
     try {
-      const res = await fetch("/api/inquiries", {
+      const res = await fetch(clientApi("/api/inquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...values, serviceSlug, lang }),
+        credentials: "include",
+        body: JSON.stringify({
+          ...values,
+          serviceSlug,
+          lang,
+          needType: showNeedType ? values.needType : undefined,
+        }),
       });
       if (!res.ok) throw new Error("submit failed");
       setStatus("done");
@@ -69,14 +97,28 @@ export function ServiceInquiryForm({
 
   if (status === "done") {
     return (
-      <div className="card text-center">
+      <div ref={successRef} className="card scroll-mt-24 text-center">
         <CheckCircle2 className="mx-auto h-14 w-14 text-brand-deep" />
         <h3 className="mt-4 text-xl font-bold text-brand-950">{q.successTitle}</h3>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">{q.successDesc}</p>
+        {!isLoggedIn && (
+          <Link
+            href={`/${lang}/register/quick?phone=${encodeURIComponent(values.phone)}&name=${encodeURIComponent(values.fullName)}&email=${encodeURIComponent(values.email)}${showNeedType ? `&need=${encodeURIComponent(values.needType)}` : ""}`}
+            className="btn-secondary mt-6"
+          >
+            {q.registerLink}
+          </Link>
+        )}
         <button
           type="button"
           onClick={() => {
-            setValues({ fullName: "", phone: "", email: "", message: "" });
+            setValues({
+              fullName: "",
+              phone: "",
+              email: "",
+              message: "",
+              needType: defaultNeedType ?? needTypeOptions[0],
+            });
             setAgree(false);
             setStatus("idle");
           }}
@@ -102,6 +144,16 @@ export function ServiceInquiryForm({
           <input id="phone" type="tel" className="field-input" placeholder={q.phonePh}
             value={values.phone} onChange={(e) => set("phone", e.target.value)} />
         </Field>
+        {showNeedType && (
+          <div className="sm:col-span-2">
+            <Field id="needType" label={q.needType} required error={errors.needType}>
+              <select id="needType" className="field-input"
+                value={values.needType} onChange={(e) => set("needType", e.target.value)}>
+                {needTypeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+              </select>
+            </Field>
+          </div>
+        )}
         <div className="sm:col-span-2">
           <Field id="email" label={q.email} error={errors.email}>
             <input id="email" type="email" className="field-input" placeholder={q.emailPh}
@@ -116,15 +168,17 @@ export function ServiceInquiryForm({
         </div>
       </div>
 
-      <div className="mt-5">
-        <label className="flex cursor-pointer items-start gap-3">
-          <input type="checkbox" checked={agree}
-            onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
-          <span className="text-sm text-slate-600">{q.consent}</span>
-        </label>
-        {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
-      </div>
+      {!hideAgree && (
+        <div className="mt-5">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input type="checkbox" checked={agree}
+              onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
+            <span className="text-sm text-slate-600">{q.consent}</span>
+          </label>
+          {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
+        </div>
+      )}
 
       {errors.__submit && <p className="mt-3 text-sm text-red-500">{errors.__submit}</p>}
 

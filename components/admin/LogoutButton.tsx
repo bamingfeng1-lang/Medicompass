@@ -2,11 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { clientApi } from "@/lib/api";
 
 export function LogoutButton({ lang, label }: { lang: string; label: string }) {
   const router = useRouter();
   const onClick = async () => {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await fetch(clientApi("/api/admin/logout"), { method: "POST", credentials: "include" });
     router.replace(`/${lang}/admin/login`);
     router.refresh();
   };

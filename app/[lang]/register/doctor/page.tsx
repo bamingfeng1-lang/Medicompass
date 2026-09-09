@@ -28,11 +28,11 @@ export default function DoctorRegister({ params }: { params: { lang: string } })
     { name: "remote", label: f.remote, type: "select", options: f.remoteOptions, required: true, half: true },
     { name: "email", label: f.email, type: "email", placeholder: ph.email, required: true, half: true },
     { name: "phone", label: f.phone, type: "tel", placeholder: ph.phone, required: true, half: true },
-    { name: "license", label: f.license, type: "text" },
+    { name: "license", label: f.license, type: "file", accept: "application/pdf,image/*" },
   ];
 
   return (
-    <Section className="bg-slate-50">
+    <Section className="bg-slate-50 !pt-10 sm:!pt-14">
       <div className="mx-auto max-w-2xl">
         <RegisterHeader
           lang={lang}

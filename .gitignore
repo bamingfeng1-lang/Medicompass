@@ -19,6 +19,8 @@
 # misc
 .DS_Store
 *.pem
+nohup.out
+nohup.*
 
 # debug
 npm-debug.log*
@@ -28,6 +30,7 @@ yarn-error.log*
 # local env files
 .env
 .env*.local
+.env.production
 
 # app data (sqlite db + uploaded attachments)
 /data

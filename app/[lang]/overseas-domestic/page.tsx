@@ -8,6 +8,7 @@ import { ServiceInquiryForm } from "@/components/forms/ServiceInquiryForm";
 import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
 import { getService, SERVICE_CATEGORIES } from "@/lib/services/catalog";
+import { getCurrentUser, getCurrentUserProfile } from "@/lib/api";
 
 // Promoted to a top-level section, alongside Packages / Second Opinion.
 // Content is reused from the service catalog entry.
@@ -21,7 +22,9 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
   return { title: copy.name, description: copy.summary };
 }
 
-export default function OverseasDomesticPage({ params }: { params: { lang: string } }) {
+export const dynamic = "force-dynamic";
+
+export default async function OverseasDomesticPage({ params }: { params: { lang: string } }) {
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const svc = getService(SLUG);
@@ -32,6 +35,12 @@ export default function OverseasDomesticPage({ params }: { params: { lang: strin
   const copy = lang === "en" ? svc.en : svc.zh;
   const category = SERVICE_CATEGORIES.find((c) => c.key === svc.category);
   const eyebrow = category ? (lang === "en" ? category.en : category.zh) : s.hero.badge;
+
+  // Prefill the "contact us" form with the logged-in patient's name/phone/email.
+  const user = await getCurrentUser();
+  const profile = user ? await getCurrentUserProfile() : null;
+  const initialValues =
+    profile ? { fullName: profile.fullName, phone: profile.phone, email: profile.email } : undefined;
 
   return (
     <>
@@ -98,7 +107,14 @@ export default function OverseasDomesticPage({ params }: { params: { lang: strin
           </div>
 
           <div className="lg:sticky lg:top-24">
-            <ServiceInquiryForm lang={lang} dict={t} serviceSlug={svc.slug} />
+            <ServiceInquiryForm
+              lang={lang}
+              dict={t}
+              serviceSlug={svc.slug}
+              initialValues={initialValues}
+              hideAgree={!!user}
+              isLoggedIn={!!user}
+            />
           </div>
         </div>
       </Section>

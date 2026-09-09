@@ -10,7 +10,13 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
   return { title: getDictionary(lang).register.patientTitle };
 }
 
-export default function PatientRegister({ params }: { params: { lang: string } }) {
+export default function PatientRegister({
+  params,
+  searchParams,
+}: {
+  params: { lang: string };
+  searchParams?: { phone?: string };
+}) {
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
@@ -27,8 +33,10 @@ export default function PatientRegister({ params }: { params: { lang: string } }
     { name: "condition", label: f.condition, type: "textarea", placeholder: ph.condition, required: true },
   ];
 
+  const initialPhone = searchParams?.phone ? decodeURIComponent(searchParams.phone) : undefined;
+
   return (
-    <Section className="bg-slate-50">
+    <Section className="bg-slate-50 !pt-10 sm:!pt-14">
       <div className="mx-auto max-w-2xl">
         <RegisterHeader
           lang={lang}
@@ -36,7 +44,7 @@ export default function PatientRegister({ params }: { params: { lang: string } }
           title={t.register.patientTitle}
           desc={t.register.patientDesc}
         />
-        <RegisterForm role="patient" fields={fields} lang={lang} dict={t} />
+        <RegisterForm role="patient" fields={fields} lang={lang} dict={t} initialPhone={initialPhone} />
       </div>
     </Section>
   );

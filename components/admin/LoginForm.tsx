@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn } from "lucide-react";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
+import { clientApi } from "@/lib/api";
 
 export function LoginForm({ lang, dict }: { lang: Locale; dict: Dictionary }) {
   const a = dict.admin;
@@ -20,9 +21,10 @@ export function LoginForm({ lang, dict }: { lang: Locale; dict: Dictionary }) {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch(clientApi("/api/admin/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
       if (!res.ok) {

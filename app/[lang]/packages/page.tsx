@@ -19,6 +19,11 @@ export default function PackagesPage({ params }: { params: { lang: string } }) {
   const t = getDictionary(lang);
   const k = t.packages;
   const p = (path: string) => `/${lang}${path}`;
+  const needOptions = t.register.fields.needTypeOptions;
+  // Map each package (by index) to a need-type value:
+  // 0 高端健康体检→健康体检(2), 1 国际二诊→国际二诊(0),
+  // 2 来华手术治疗→来华手术(4), 3 海外就医医旅→海外就医(1)
+  const packageNeedIndex = [2, 0, 4, 3];
 
   return (
     <>
@@ -35,7 +40,7 @@ export default function PackagesPage({ params }: { params: { lang: string } }) {
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-slate-300">{k.hero.subtitle}</p>
             <Link
-              href={p("/register/patient")}
+              href={p("/packages/enquire")}
               className="btn mt-9 bg-white text-brand-deep hover:bg-brand-50"
             >
               {k.hero.cta}
@@ -68,7 +73,7 @@ export default function PackagesPage({ params }: { params: { lang: string } }) {
                 <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-5">
                   <span className="text-sm font-semibold text-brand-deep">{item.price}</span>
                   <Link
-                    href={p("/register/patient")}
+                    href={p(`/packages/enquire?need=${encodeURIComponent(needOptions[packageNeedIndex[i] ?? 0])}`)}
                     className="inline-flex items-center gap-1 text-sm font-medium text-brand-deep hover:gap-2 transition-all"
                   >
                     {k.hero.cta}

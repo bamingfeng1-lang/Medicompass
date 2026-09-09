@@ -1,38 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { jwtVerify } from "jose";
 
-// Edge-safe: only uses `jose` (no Prisma/bcrypt imports, which can't run on
-// the Edge runtime). Protects the admin UI + admin API.
+// The Python (FastAPI) backend owns AUTH_SECRET and validates the JWT. Here we
+// only gate the admin *pages* on the presence of the session cookie so
+// unauthenticated users are redirected to the login page. The backend still
+// verifies the token on every admin API call, so a forged/expired cookie can't
+// actually read data — the admin pages fetch through the backend and redirect
+// to /login on a 401.
 
 const SESSION_COOKIE = "mc_admin_session";
 
-async function hasValidSession(req: NextRequest): Promise<boolean> {
-  const token = req.cookies.get(SESSION_COOKIE)?.value;
-  const secret = process.env.AUTH_SECRET;
-  if (!token || !secret) return false;
-  try {
-    await jwtVerify(token, new TextEncoder().encode(secret));
-    return true;
-  } catch {
-    return false;
-  }
+function hasSessionCookie(req: NextRequest): boolean {
+  return Boolean(req.cookies.get(SESSION_COOKIE)?.value);
 }
 
 // Matches /zh/admin, /en/admin and their subpaths, but not /zh/admin/login.
 const ADMIN_PAGE = /^\/(zh|en)\/admin(?:\/(?!login).*)?$/;
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Admin API (except login)
-  if (pathname.startsWith("/api/admin") && pathname !== "/api/admin/login") {
-    if (await hasValidSession(req)) return NextResponse.next();
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  }
-
-  // Admin pages (except the login page)
   if (ADMIN_PAGE.test(pathname)) {
-    if (await hasValidSession(req)) return NextResponse.next();
+    if (hasSessionCookie(req)) return NextResponse.next();
     const lang = pathname.split("/")[1] || "zh";
     const url = req.nextUrl.clone();
     url.pathname = `/${lang}/admin/login`;
@@ -44,5 +32,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/(zh|en)/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/(zh|en)/admin/:path*"],
 };
+

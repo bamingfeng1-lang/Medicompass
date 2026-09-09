@@ -6,10 +6,23 @@ import { useState } from "react";
 import { Menu, X, ChevronDown, Globe } from "lucide-react";
 import { clsx } from "clsx";
 import { Logo } from "./Logo";
+import { UserMenu } from "./auth/UserMenu";
+import { AdminMenu } from "./auth/AdminMenu";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
+import type { CurrentUser, CurrentAdmin } from "@/lib/api";
 
-export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+export function Navbar({
+  lang,
+  dict,
+  user,
+  admin,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+  user?: CurrentUser | null;
+  admin?: CurrentAdmin | null;
+}) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [regOpen, setRegOpen] = useState(false);
@@ -49,31 +62,33 @@ export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
             </NavLink>
           ))}
 
-          <div
-            className="relative"
-            onMouseEnter={() => setRegOpen(true)}
-            onMouseLeave={() => setRegOpen(false)}
-          >
-            <button className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-brand-deep">
-              {dict.nav.register}
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            {regOpen && (
-              <div className="absolute left-0 top-full w-56 pt-2">
-                <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-soft">
-                  {regLinks.map((l) => (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      className="block rounded-xl px-4 py-2.5 text-sm text-slate-700 transition hover:bg-brand-50 hover:text-brand-deep"
-                    >
-                      {l.label}
-                    </Link>
-                  ))}
+          {!user && !admin && (
+            <div
+              className="relative"
+              onMouseEnter={() => setRegOpen(true)}
+              onMouseLeave={() => setRegOpen(false)}
+            >
+              <button className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-brand-deep">
+                {dict.nav.register}
+                <ChevronDown className="h-4 w-4" />
+              </button>
+              {regOpen && (
+                <div className="absolute left-0 top-full w-56 pt-2">
+                  <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-soft">
+                    {regLinks.map((l) => (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        className="block rounded-xl px-4 py-2.5 text-sm text-slate-700 transition hover:bg-brand-50 hover:text-brand-deep"
+                      >
+                        {l.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="hidden items-center gap-3 lg:flex">
@@ -84,9 +99,28 @@ export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
             <Globe className="h-4 w-4" />
             {dict.switchTo}
           </Link>
-          <Link href={p("/register/patient")} className="btn-primary">
-            {dict.nav.cta}
-          </Link>
+          {user ? (
+            <>
+              <UserMenu lang={lang} displayName={user.displayName} logoutLabel={dict.nav.logout} tasksHref={user.roles.some((r) => r === "provider" || r === "doctor") ? p("/account/assigned") : p("/account/applications")} tasksLabel={user.roles.some((r) => r === "provider" || r === "doctor") ? dict.nav.myTasks : dict.nav.myApplications} myProfileLabel={user.roles.some((r) => r === "provider" || r === "doctor") ? dict.nav.myProfile : undefined} changePasswordLabel={dict.nav.changePassword} />
+              <Link href={p("/second-opinion/apply-logged-in")} className="btn-primary">
+                {dict.nav.cta}
+              </Link>
+            </>
+          ) : admin ? (
+            <AdminMenu lang={lang} username={admin.username} consoleLabel={dict.admin.brand} logoutLabel={dict.admin.logout} changePasswordLabel={dict.nav.changePassword} />
+          ) : (
+            <>
+              <Link
+                href={p("/login")}
+                className="rounded-full px-4 py-2 text-sm font-medium text-slate-600 transition hover:text-brand-deep"
+              >
+                {dict.nav.login}
+              </Link>
+              <Link href={p("/register/patient")} className="btn-primary">
+                {dict.nav.cta}
+              </Link>
+            </>
+          )}
         </div>
 
         {/* mobile toggle */}
@@ -103,7 +137,7 @@ export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
       {mobileOpen && (
         <div className="border-t border-slate-100 bg-white lg:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
-            {[...links, ...regLinks].map((l) => (
+            {[...links, ...(user || admin ? [] : regLinks)].map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
@@ -122,13 +156,49 @@ export function Navbar({ lang, dict }: { lang: Locale; dict: Dictionary }) {
                 <Globe className="h-4 w-4" />
                 {dict.switchTo}
               </Link>
-              <Link
-                href={p("/register/patient")}
-                onClick={() => setMobileOpen(false)}
-                className="btn-primary flex-1"
-              >
-                {dict.nav.cta}
-              </Link>
+              {user ? (
+                <>
+                  <UserMenu
+                    lang={lang}
+                    displayName={user.displayName}
+                    logoutLabel={dict.nav.logout}
+                    tasksHref={user.roles.some((r) => r === "provider" || r === "doctor") ? p("/account/assigned") : p("/account/applications")}
+                    tasksLabel={user.roles.some((r) => r === "provider" || r === "doctor") ? dict.nav.myTasks : dict.nav.myApplications}
+                    myProfileLabel={
+                      user.roles.some((r) => r === "provider" || r === "doctor")
+                        ? dict.nav.myProfile
+                        : undefined
+                    }
+                    changePasswordLabel={dict.nav.changePassword}
+                  />
+                  <Link
+                    href={p("/second-opinion/apply-logged-in")}
+                    onClick={() => setMobileOpen(false)}
+                    className="btn-primary flex-1"
+                  >
+                    {dict.nav.cta}
+                  </Link>
+                </>
+              ) : admin ? (
+                <AdminMenu lang={lang} username={admin.username} consoleLabel={dict.admin.brand} logoutLabel={dict.admin.logout} changePasswordLabel={dict.nav.changePassword} />
+              ) : (
+                <>
+                  <Link
+                    href={p("/login")}
+                    onClick={() => setMobileOpen(false)}
+                    className="btn-secondary flex-1"
+                  >
+                    {dict.nav.login}
+                  </Link>
+                  <Link
+                    href={p("/register/patient")}
+                    onClick={() => setMobileOpen(false)}
+                    className="btn-primary flex-1"
+                  >
+                    {dict.nav.cta}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

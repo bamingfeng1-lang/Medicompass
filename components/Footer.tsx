@@ -47,8 +47,8 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
             </li>
             <li className="flex items-start gap-2.5 text-sm text-slate-400">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-sky" />
-              <a href={`mailto:hello@${BRAND.url}`} className="hover:text-white">
-                hello@{BRAND.url}
+              <a href={`mailto:customerservice@${BRAND.url}`} className="hover:text-white">
+                customerservice@{BRAND.url}
               </a>
             </li>
           </FooterCol>

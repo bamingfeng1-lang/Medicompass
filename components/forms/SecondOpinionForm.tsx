@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { CheckCircle2, Upload, X, FileText } from "lucide-react";
 import Link from "next/link";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
+import { clientApi } from "@/lib/api";
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const ALLOWED = [
@@ -32,7 +33,19 @@ function fmtSize(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
-export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictionary }) {
+export function SecondOpinionForm({
+  lang,
+  dict,
+  initialValues,
+  hideAgree = false,
+  isLoggedIn = false,
+}: {
+  lang: Locale;
+  dict: Dictionary;
+  initialValues?: Partial<Values>;
+  hideAgree?: boolean;
+  isLoggedIn?: boolean;
+}) {
   const t = dict.register;
   const c = dict.common;
   const a = dict.apply;
@@ -40,13 +53,13 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
   const ph = t.placeholders;
 
   const [values, setValues] = useState<Values>({
-    fullName: "",
-    email: "",
-    phone: "",
-    country: "",
-    needType: f.needTypeOptions[0],
-    destination: "",
-    condition: "",
+    fullName: initialValues?.fullName ?? "",
+    email: initialValues?.email ?? "",
+    phone: initialValues?.phone ?? "",
+    country: initialValues?.country ?? "",
+    needType: initialValues?.needType ?? f.needTypeOptions[0],
+    destination: initialValues?.destination ?? "",
+    condition: initialValues?.condition ?? "",
   });
   const [files, setFiles] = useState<File[]>([]);
   const [agree, setAgree] = useState(false);
@@ -54,11 +67,22 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
   const [fileError, setFileError] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
   const inputRef = useRef<HTMLInputElement>(null);
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status === "done") {
+      successRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [status]);
 
   const set = (name: keyof Values, v: string) => {
     setValues((s) => ({ ...s, [name]: v }));
     setErrors((e) => ({ ...e, [name]: "" }));
   };
+
+  // Only the "国际二诊" (second-opinion) need type collects medical attachments.
+  // It is optional — the client may upload later when the admin requests it.
+  const isSecondOpinion = values.needType === f.needTypeOptions[0];
 
   const addFiles = (list: FileList | null) => {
     if (!list) return;
@@ -86,7 +110,7 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
     const req: (keyof Values)[] = ["fullName", "email", "phone", "country", "needType", "condition"];
     for (const k of req) if (!values[k].trim()) e[k] = c.required;
     if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) e.email = c.invalidEmail;
-    if (!agree) e.__agree = c.agreeError;
+    if (!hideAgree && !agree) e.__agree = c.agreeError;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -102,7 +126,11 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
     files.forEach((file) => fd.append("attachments", file));
 
     try {
-      const res = await fetch("/api/applications", { method: "POST", body: fd });
+      const res = await fetch(clientApi("/api/applications"), {
+        method: "POST",
+        credentials: "include",
+        body: fd,
+      });
       if (!res.ok) throw new Error("submit failed");
       setStatus("done");
     } catch {
@@ -113,11 +141,19 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
 
   if (status === "done") {
     return (
-      <div className="card mx-auto max-w-lg text-center">
+      <div ref={successRef} className="card mx-auto max-w-lg scroll-mt-24 text-center">
         <CheckCircle2 className="mx-auto h-16 w-16 text-brand-deep" />
         <h2 className="mt-5 text-2xl font-bold text-brand-950">{c.successTitle}</h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-600">{c.successDesc}</p>
-        <Link href={`/${lang}`} className="btn-primary mt-8">
+        {!isLoggedIn && (
+          <Link
+            href={`/${lang}/register/quick?phone=${encodeURIComponent(values.phone)}&name=${encodeURIComponent(values.fullName)}&email=${encodeURIComponent(values.email)}&need=${encodeURIComponent(values.needType)}`}
+            className="btn-secondary mt-6"
+          >
+            {a.registerLink}
+          </Link>
+        )}
+        <Link href={`/${lang}`} className="btn-primary mt-4">
           {c.backHome}
         </Link>
       </div>
@@ -161,7 +197,8 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
         </div>
       </div>
 
-      {/* Attachments */}
+      {/* Attachments — only for second-opinion; optional */}
+      {isSecondOpinion && (
       <div className="mt-6">
         <label className="field-label">{a.uploadLabel}</label>
         <div
@@ -197,16 +234,19 @@ export function SecondOpinionForm({ lang, dict }: { lang: Locale; dict: Dictiona
           <p className="mt-2 text-xs text-slate-400">{a.uploadEmpty}</p>
         )}
       </div>
+      )}
 
-      <div className="mt-6">
-        <label className="flex cursor-pointer items-start gap-3">
-          <input type="checkbox" checked={agree}
-            onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
-            className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
-          <span className="text-sm text-slate-600">{t.consent}</span>
-        </label>
-        {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
-      </div>
+      {!hideAgree && (
+        <div className="mt-6">
+          <label className="flex cursor-pointer items-start gap-3">
+            <input type="checkbox" checked={agree}
+              onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
+            <span className="text-sm text-slate-600">{t.consent}</span>
+          </label>
+          {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
+        </div>
+      )}
 
       <button type="submit" disabled={status === "submitting"} className="btn-primary mt-8 w-full">
         {status === "submitting" ? c.submitting : c.submit}
