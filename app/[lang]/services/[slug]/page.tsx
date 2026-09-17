@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+<<<<<<< HEAD
 import { ArrowLeft, CheckCircle2, Users } from "lucide-react";
+=======
+import { ArrowRight, CheckCircle2, Users } from "lucide-react";
+>>>>>>> f18247c (增加CART)
 import type { Metadata } from "next";
 import { Section } from "@/components/ui/Section";
 import { Reveal } from "@/components/Reveal";
@@ -8,7 +12,11 @@ import { ServiceIcon } from "@/components/services/ServiceIcon";
 import { ServiceInquiryForm } from "@/components/forms/ServiceInquiryForm";
 import { isLocale, LOCALES, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
+<<<<<<< HEAD
 import { SERVICES, getService } from "@/lib/services/catalog";
+=======
+import { SERVICES, SERVICE_CATEGORIES, getService } from "@/lib/services/catalog";
+>>>>>>> f18247c (增加CART)
 
 export function generateStaticParams() {
   const params: { lang: string; slug: string }[] = [];
@@ -47,6 +55,11 @@ export default function ServiceDetailPage({
   const t = getDictionary(lang);
   const s = t.services;
   const copy = lang === "en" ? svc.en : svc.zh;
+<<<<<<< HEAD
+=======
+  const category = SERVICE_CATEGORIES.find((c) => c.key === svc.category);
+  const categoryName = category ? (lang === "zh" ? category.zh : category.en) : "";
+>>>>>>> f18247c (增加CART)
   const p = (path: string) => `/${lang}${path}`;
 
   return (
@@ -56,6 +69,7 @@ export default function ServiceDetailPage({
         <div className="absolute inset-0 bg-grid-faint opacity-20 [background-size:32px_32px]" />
         <div className="absolute -right-10 top-0 h-64 w-64 rounded-full bg-brand-deep/40 blur-3xl" />
         <div className="container-page relative py-16 sm:py-20">
+<<<<<<< HEAD
           <Link
             href={p("/services")}
             className="inline-flex items-center gap-1.5 text-sm text-slate-300 transition hover:text-white"
@@ -63,6 +77,8 @@ export default function ServiceDetailPage({
             <ArrowLeft className="h-4 w-4" />
             {s.detailBack}
           </Link>
+=======
+>>>>>>> f18247c (增加CART)
           <div className="mt-6 flex items-start gap-5">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-brand-sky">
               <ServiceIcon name={svc.icon} className="h-8 w-8" />
@@ -70,6 +86,16 @@ export default function ServiceDetailPage({
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{copy.name}</h1>
               <p className="mt-2 text-lg text-slate-300">{copy.tagline}</p>
+<<<<<<< HEAD
+=======
+              <Link
+                href={p(`/second-opinion/apply?category=${encodeURIComponent(categoryName)}&need=${encodeURIComponent(copy.name)}`)}
+                className="btn mt-6 bg-white text-brand-deep hover:bg-brand-50"
+              >
+                {lang === "zh" ? "立即申请" : "Apply Now"}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+>>>>>>> f18247c (增加CART)
             </div>
           </div>
         </div>

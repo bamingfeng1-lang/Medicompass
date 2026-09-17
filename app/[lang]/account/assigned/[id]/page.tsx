@@ -44,6 +44,10 @@ export default async function AssignedApplicationDetailPage({
   const isEnquiry = !!app.serviceSlug;
 
   const rows: [string, string][] = [
+<<<<<<< HEAD
+=======
+    [lang === "zh" ? "申请编号" : "Application No.", app.applicationNo || "—"],
+>>>>>>> f18247c (增加CART)
     [f.fullName, app.fullName],
     [f.email, app.email || "—"],
     [f.phone, app.phone],
@@ -92,6 +96,48 @@ export default async function AssignedApplicationDetailPage({
           </dl>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* CAR-T specific info */}
+        {(app.hospital || app.expertDoctor || app.arrivalDatetime || app.flightNumber || app.consultationDatetime) && (
+          <div className="card mt-6">
+            <h2 className="text-lg font-semibold text-brand-950">{lang === "zh" ? "CAR-T 治疗信息" : "CAR-T Treatment Info"}</h2>
+            <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+              {app.hospital && (
+                <div className="flex flex-col">
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "医院" : "Hospital"}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{app.hospital}</dd>
+                </div>
+              )}
+              {app.expertDoctor && (
+                <div className="flex flex-col">
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "专家医生" : "Expert Doctor"}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{app.expertDoctor}</dd>
+                </div>
+              )}
+              {app.arrivalDatetime && (
+                <div className="flex flex-col">
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "来华日期时间" : "Arrival Date/Time"}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{fmt(app.arrivalDatetime)}</dd>
+                </div>
+              )}
+              {app.flightNumber && (
+                <div className="flex flex-col">
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "航班号" : "Flight Number"}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{app.flightNumber}</dd>
+                </div>
+              )}
+              {app.consultationDatetime && (
+                <div className="flex flex-col">
+                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "看诊日期时间" : "Consultation Date/Time"}</dt>
+                  <dd className="mt-0.5 text-sm text-slate-700">{fmt(app.consultationDatetime)}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        )}
+
+>>>>>>> f18247c (增加CART)
         {/* Condition (second-opinion) */}
         {app.condition && (
           <div className="card mt-6">

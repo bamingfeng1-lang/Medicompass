@@ -20,6 +20,28 @@ import {
   Leaf,
   Droplet,
   HeartPulse,
+<<<<<<< HEAD
+=======
+  FileText,
+  FlaskConical,
+  Microscope,
+  ShieldCheck,
+  Bed,
+  Car,
+  Ambulance,
+  Watch,
+  Globe,
+  Globe2,
+  Scan,
+  Syringe,
+  Salad,
+  Scale,
+  Brain,
+  Wind,
+  Bike,
+  Pill,
+  Hospital,
+>>>>>>> f18247c (增加CART)
   type LucideIcon,
 } from "lucide-react";
 
@@ -44,6 +66,29 @@ const ICONS: Record<string, LucideIcon> = {
   Sparkles,
   Leaf,
   Droplet,
+<<<<<<< HEAD
+=======
+  HeartPulse,
+  FileText,
+  FlaskConical,
+  Microscope,
+  ShieldCheck,
+  Bed,
+  Car,
+  Ambulance,
+  Watch,
+  Globe,
+  Globe2,
+  Scan,
+  Syringe,
+  Salad,
+  Scale,
+  Brain,
+  Wind,
+  Bike,
+  Pill,
+  Hospital,
+>>>>>>> f18247c (增加CART)
 };
 
 export function ServiceIcon({ name, className }: { name: string; className?: string }) {

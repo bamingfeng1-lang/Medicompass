@@ -8,14 +8,28 @@ export const en: Dictionary = {
     home: "Home",
     packages: "Packages",
     secondOpinion: "Medicaltrip to China",
+<<<<<<< HEAD
     services: "Health Services",
     overseasDomestic: "Overseas Care Landing",
+=======
+    carT: "CAR-T",
+    services: "Health Services",
+    overseasDomestic: "Overseas Care Landing",
+    privateDoctor: "Private Doctor",
+    basicMedical: "Basic Medical",
+    crossBorderMedical: "Cross-border Medical",
+    longevityMedical: "Longevity Medical",
+>>>>>>> f18247c (增加CART)
     about: "About",
     register: "Register",
     registerPatient: "Patient Sign-up",
     registerProvider: "Provider Sign-up",
     registerDoctor: "Doctor Sign-up",
+<<<<<<< HEAD
     cta: "Start Your Medical Trip",
+=======
+    cta: "Service Request",
+>>>>>>> f18247c (增加CART)
     login: "Sign In",
     logout: "Sign Out",
     myApplications: "My Applications",
@@ -53,7 +67,11 @@ export const en: Dictionary = {
   },
   apply: {
     title: "Book an International Second Opinion",
+<<<<<<< HEAD
     desc: "Share your condition details and upload relevant medical records — our advisors and expert panel will review them shortly.",
+=======
+    desc: "Select the service type you need — our advisors and expert panel will review them shortly.",
+>>>>>>> f18247c (增加CART)
     back: "Back to Second Opinion",
     uploadLabel: "Upload medical records",
     uploadHint: "PDF, JPG, PNG, WebP supported; max 15MB per file. Reports, imaging, diagnoses, etc.",
@@ -94,6 +112,12 @@ export const en: Dictionary = {
     contactInfo: "Contact info",
     conditionInfo: "Condition summary",
     attachments: "Attachments",
+<<<<<<< HEAD
+=======
+    clientAttachments: "Client Uploaded Attachments",
+    emailAttachments: "Email Attachments",
+    otherAttachments: "Other Attachments",
+>>>>>>> f18247c (增加CART)
     noAttachments: "No attachments.",
     download: "Download",
     aiSummary: "AI Summary",
@@ -111,8 +135,15 @@ export const en: Dictionary = {
     statusSaving: "Updating…",
     statusSaved: "Status updated",
     statusSaveError: "Update failed, please try again.",
+<<<<<<< HEAD
     supremeTitle: "Admin Edit (Full Access)",
     supremeHint: "Edit any application field / processing product, and upload attachments. Use this to complete the flow yourself when no provider/doctor is available yet.",
+=======
+    supremeTitle: "Application Info",
+    supremeHint: "View and edit application fields and processing products, and upload attachments.",
+    supremeEdit: "Edit",
+    supremeCancel: "Cancel",
+>>>>>>> f18247c (增加CART)
     supremeSave: "Save changes",
     supremeSaving: "Saving…",
     supremeSaved: "Saved.",
@@ -157,6 +188,61 @@ export const en: Dictionary = {
     eventAssigned: "Assigned",
     eventUnassigned: "Unassigned",
     eventNoteAdded: "Note added",
+<<<<<<< HEAD
+=======
+    eventEmailSent: "Email sent",
+    eventCommLogged: "Communication logged",
+  },
+  adminEmail: {
+    title: "Send email to client",
+    button: "Send email",
+    subject: "Subject",
+    subjectPh: "Enter the email subject",
+    content: "Message",
+    contentPh: "Write the email body to send to the client…",
+    attachments: "Attachments (optional)",
+    uploadCta: "Click or drag files to upload",
+    uploadHint: "Supports PDF, images; max 15MB per file",
+    uploadEmpty: "No files selected",
+    remove: "Remove",
+    fileTooLarge: "File too large: ",
+    fileTypeError: "File type not supported: ",
+    hint: "The email is sent with the Medicompass brand template to the client's address on this application (de-duplicated with the account email). Attachments are sent with the email and saved as application attachments.",
+    send: "Send",
+    sending: "Sending…",
+    cancel: "Cancel",
+    required: "Please enter both a subject and a message.",
+    sent: "Email sent.",
+    sentTo: "Sent to",
+    failed: "Failed to send. Please check the SMTP settings and retry.",
+    disabled: "Email service is disabled; no email was sent (the record is saved).",
+    noRecipients: "This application has no usable recipient email.",
+    opError: "Send failed, please try again.",
+  },
+  adminComm: {
+    title: "Communication history",
+    button: "Log communication",
+    channel: "Channel",
+    subject: "Subject / summary",
+    subjectPh: "Brief summary of the communication",
+    content: "Notes",
+    contentPh: "Record the key points…",
+    save: "Save",
+    saving: "Saving…",
+    cancel: "Cancel",
+    required: "Please enter a subject or some notes.",
+    saved: "Communication saved.",
+    opError: "Save failed, please try again.",
+    empty: "No communication records yet.",
+    recipients: "Recipients",
+    channel_email: "Email",
+    channel_phone: "Phone",
+    channel_meeting: "Meeting",
+    channel_other: "Other",
+    status_sent: "Sent",
+    status_failed: "Failed",
+    status_disabled: "Disabled",
+>>>>>>> f18247c (增加CART)
   },
   adminFinalize: {
     title: "Final QC",
@@ -187,6 +273,10 @@ export const en: Dictionary = {
     detailOverview: "Overview",
     detailHighlights: "What's included",
     detailAudience: "Who it's for",
+<<<<<<< HEAD
+=======
+    enquire: { title: "Appointment", desc: "Fill in your details and choose your need type — our advisor will contact you soon with the right service options.", back: "Back to Home" },
+>>>>>>> f18247c (增加CART)
     inquiry: {
       title: "Leave your details, we'll contact you",
       desc: "Fill in the form below and our advisor will reach out shortly to walk you through this service.",
@@ -199,7 +289,12 @@ export const en: Dictionary = {
       phonePh: "Your phone number",
       emailPh: "name@example.com (optional)",
       messagePh: "Briefly describe your needs if any (optional)",
+<<<<<<< HEAD
       consent: "I have read and agree to the Terms of Service and Privacy Policy.",
+=======
+      consent: "I have read and agree to the 《Disclaimer》.",
+      disclaimerLink: "Disclaimer",
+>>>>>>> f18247c (增加CART)
       submit: "Submit & contact me",
       submitting: "Submitting…",
       successTitle: "Submitted!",
@@ -227,8 +322,13 @@ export const en: Dictionary = {
   },
   home: {
     heroBadge: "AI-Powered · Global Cross-Border Medical Travel",
+<<<<<<< HEAD
     heroTitle: "World-class care, ",
     heroTitleAccent: "within reach",
+=======
+    heroTitle: "Bringing World-Class Healthcare ",
+    heroTitleAccent: "Within Reach",
+>>>>>>> f18247c (增加CART)
     heroSubtitle:
       "Building the world's leading cross-border medical travel platform. We use AI to break down medical information barriers and deliver reliable, cost-effective, and timely healthcare and wellness journeys.",
     heroCtaPrimary: "Book a Second Opinion",
@@ -414,6 +514,53 @@ export const en: Dictionary = {
       disclaimer: "This program description is for reference only. Coverage, exclusions, service scope and fees are subject to the official insurance contract and service agreement.",
     },
   },
+<<<<<<< HEAD
+=======
+  carT: {
+    hero: {
+      badge: "Cutting-edge Cell Therapy · Medical Trip to China",
+      title: "CAR-T Cell Therapy",
+      subtitle:
+        "CAR-T (Chimeric Antigen Receptor T-cell) therapy is a revolutionary cancer immunotherapy that engineers patients' own immune cells to precisely target cancer cells. Medicompass connects you with China's top CAR-T treatment centers, providing end-to-end service from consultation to treatment.",
+      cta: "Apply for CAR-T Treatment",
+    },
+    whatEyebrow: "What is CAR-T Therapy",
+    whatTitle: "Using Your Own Immune Cells to Fight Cancer",
+    whatDesc:
+      "CAR-T therapy is an innovative immunotherapy approach. Doctors extract T lymphocytes from the patient, then use genetic engineering in the lab to install a 'navigation system' (CAR) that enables them to precisely identify and attack cancer cells. The modified CAR-T cells are expanded in vitro and infused back into the patient, where they continue fighting cancer.",
+    audienceTitle: "CAR-T Therapy Indications",
+    audience: [
+      "Relapsed or refractory B-cell acute lymphoblastic leukemia (B-ALL)",
+      "Relapsed or refractory diffuse large B-cell lymphoma (DLBCL)",
+      "Relapsed or refractory follicular lymphoma (FL)",
+      "Relapsed or refractory mantle cell lymphoma (MCL)",
+      "Relapsed or refractory multiple myeloma (MM)",
+      "Other hematological malignancies (subject to expert evaluation)",
+    ],
+    processEyebrow: "Service Process",
+    processTitle: "Seven Steps to Start Your CAR-T Journey",
+    processNote: "Professional accompaniment from first consultation to hospital visit",
+    process: [
+      { step: "01", name: "Initial Consultation", desc: "Submit basic medical information; medical advisor conducts preliminary assessment", time: "1 business day" },
+      { step: "02", name: "Medical Record Collection & Review", desc: "Collect complete medical records, professionally translated and submitted for expert review", time: "3-5 business days" },
+      { step: "03", name: "Video Consultation", desc: "Video consultation with CAR-T specialist for detailed condition assessment", time: "By appointment" },
+      { step: "04", name: "Expert Recommendation", desc: "Match with the most suitable CAR-T specialist and hospital based on your condition", time: "2-3 business days" },
+      { step: "05", name: "Confirm Specialist", desc: "Confirm specialist selection with patient, discuss treatment plan and expected outcomes", time: "1-2 business days" },
+      { step: "06", name: "Schedule China Visit", desc: "Determine travel date and itinerary based on specialist's schedule and CAR-T treatment cycle", time: "Coordination required" },
+      { step: "07", name: "Hospital Visit", desc: "Arrive in China, meet with specialist, begin CAR-T cell collection and treatment process", time: "Treatment cycle ~2-4 weeks" },
+    ],
+    whyEyebrow: "Why Choose China for CAR-T",
+    whyTitle: "World-Leading CAR-T Treatment Resources",
+    why: [
+      { title: "Top Treatment Centers", desc: "Access to leading CAR-T centers in Beijing, Shanghai, Guangzhou with extensive experience." },
+      { title: "Approved Products", desc: "Multiple CAR-T products approved in China, covering various hematological oncology indications." },
+      { title: "Clinical Experience", desc: "China leads globally in CAR-T treatment cases with mature medical teams." },
+      { title: "Bilingual Service", desc: "Professional medical translation and care managers accompany you throughout, eliminating language barriers." },
+    ],
+    ctaTitle: "Start CAR-T Treatment Consultation",
+    ctaDesc: "Wherever you are, Medicompass can connect you with China's top CAR-T treatment resources.",
+  },
+>>>>>>> f18247c (增加CART)
   about: {
     badge: "About Medicompass",
     title: "Making world-class care accessible",
@@ -442,7 +589,12 @@ export const en: Dictionary = {
       provider: { title: "Provider Sign-up", desc: "Hospitals, clinics, agencies and service providers — join our quality supply network.", cta: "Register as Provider" },
       doctor: { title: "Doctor Sign-up", desc: "Leading experts join to provide second opinions and clinical advice to patients worldwide.", cta: "Register as Doctor" },
     },
+<<<<<<< HEAD
     consent: "I have read and agree to the Terms of Service and Privacy Policy.",
+=======
+    consent: "I have read and agree to the 《Disclaimer》.",
+    disclaimerLink: "Disclaimer",
+>>>>>>> f18247c (增加CART)
     fields: {
       fullName: "Full Name",
       email: "Email",
@@ -450,7 +602,13 @@ export const en: Dictionary = {
       country: "Country / Region",
       message: "Additional Notes",
       needType: "Type of Need",
+<<<<<<< HEAD
       needTypeOptions: ["Second Opinion", "Overseas Treatment", "Health Check-up", "Medical Wellness", "Surgery in China"],
+=======
+      needTypeOptions: ["Second Opinion", "CAR-T", "Overseas Treatment", "Health Check-up", "Medical Wellness", "Surgery in China"],
+      serviceCategory: "Service Category",
+      serviceCategoryOptions: ["Second Opinion Service", "CAR-T", "Private Doctor", "Basic Medical", "Cross-border Medical", "Longevity Medical"],
+>>>>>>> f18247c (增加CART)
       condition: "Condition Summary",
       destination: "Preferred Destination",
       orgName: "Organization Name",
@@ -485,7 +643,11 @@ export const en: Dictionary = {
       message: "Anything else you'd like to add (optional)",
     },
     patientTitle: "Patient Sign-up",
+<<<<<<< HEAD
     patientDesc: "Fill in the details below and a medical advisor will contact you within 2 working days.",
+=======
+    patientDesc: "Just set up your account — any medical applications you have already submitted will be linked to your account automatically.",
+>>>>>>> f18247c (增加CART)
     providerTitle: "Provider Sign-up",
     providerDesc: "Provide your organization details; we'll assess and begin credential review.",
     doctorTitle: "Doctor Sign-up",
@@ -541,10 +703,18 @@ export const en: Dictionary = {
     colTime: "Submitted",
     view: "View details",
     backList: "Back to My Applications",
+<<<<<<< HEAD
     contactInfo: "Contact Information",
     conditionInfo: "Condition Summary",
     message: "Message",
     attachments: "Uploaded Medical Records",
+=======
+    applicationInfo: "Application Info",
+    conditionInfo: "Condition Summary",
+    message: "Message",
+    attachments: "Uploaded Medical Records",
+    otherAttachments: "Other Attachments",
+>>>>>>> f18247c (增加CART)
     noAttachments: "No attachments",
     download: "Download",
     colStatus: "Status",
@@ -724,7 +894,11 @@ export const en: Dictionary = {
     reviewNote: "Review note",
   },
   footer: {
+<<<<<<< HEAD
     tagline: "World-class care, within reach",
+=======
+    tagline: "Bringing World-Class Healthcare Within Reach",
+>>>>>>> f18247c (增加CART)
     quickLinks: "Quick Links",
     services: "Services",
     contact: "Contact",

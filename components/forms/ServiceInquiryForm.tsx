@@ -24,6 +24,10 @@ export function ServiceInquiryForm({
   isLoggedIn = false,
   showNeedType = false,
   defaultNeedType,
+<<<<<<< HEAD
+=======
+  excludeNeedTypes,
+>>>>>>> f18247c (增加CART)
 }: {
   lang: Locale;
   dict: Dictionary;
@@ -33,9 +37,19 @@ export function ServiceInquiryForm({
   isLoggedIn?: boolean;
   showNeedType?: boolean;
   defaultNeedType?: string;
+<<<<<<< HEAD
 }) {
   const q = dict.services.inquiry;
   const needTypeOptions = dict.register.fields.needTypeOptions;
+=======
+  excludeNeedTypes?: string[];
+}) {
+  const q = dict.services.inquiry;
+  const allNeedTypeOptions = dict.register.fields.needTypeOptions;
+  const needTypeOptions = excludeNeedTypes
+    ? allNeedTypeOptions.filter((o) => !excludeNeedTypes.includes(o))
+    : allNeedTypeOptions;
+>>>>>>> f18247c (增加CART)
 
   const [values, setValues] = useState<Values>({
     fullName: initialValues?.fullName ?? "",

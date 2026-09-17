@@ -10,8 +10,16 @@ from app.models.application import Application, Attachment
 from app.models.user import User
 from app.schemas.application import ApplicationCreated
 from app.services.ai import summarize_application
+<<<<<<< HEAD
 from app.services.email import send_application_confirmation_email
 from app.services.storage import MAX_FILE_BYTES, is_allowed, save_upload
+=======
+from app.services.catalog import get_service_name
+from app.services.email import send_application_confirmation_email
+from app.services.storage import MAX_FILE_BYTES, is_allowed, save_upload
+from app.api.routes.register import _resolve_patient_by_phone
+from app.core.patient_no import generate_application_no
+>>>>>>> f18247c (增加CART)
 
 router = APIRouter(prefix="/api/applications", tags=["applications"])
 
@@ -25,6 +33,10 @@ async def create_application(
     email: str = Form(""),
     phone: str = Form(""),
     country: str = Form(""),
+<<<<<<< HEAD
+=======
+    service_category: str = Form("", alias="serviceCategory"),
+>>>>>>> f18247c (增加CART)
     need_type: str = Form("", alias="needType"),
     destination: str = Form(""),
     condition: str = Form(""),
@@ -69,12 +81,44 @@ async def create_application(
             )
         prepared.append({"filename": f.filename or "file", "content": content, "mime": mime})
 
+<<<<<<< HEAD
     application = Application(
         user_id=user.id if user else None,
+=======
+    # 如果用户未登录，尝试通过手机号查找已存在的 user 并关联
+    user_id = user.id if user else None
+    patient_id = None
+
+    if not user_id and values["phone"]:
+        # 未登录用户：通过手机号查找或创建 patient
+        patient = _resolve_patient_by_phone(db, values["phone"], values["fullName"], lang.strip() or "zh")
+        patient_id = patient.id
+        # 如果 patient 有关联的 user，也关联上
+        if patient.user_id:
+            user_id = patient.user_id
+    elif user_id:
+        # 已登录用户：通过手机号查找 patient
+        from app.models.registration import RegistrationPatient
+        patient = db.query(RegistrationPatient).filter(
+            RegistrationPatient.user_id == user_id,
+            RegistrationPatient.phone == values["phone"],
+        ).first()
+        if patient:
+            patient_id = patient.id
+
+    application = Application(
+        user_id=user_id,
+        patient_id=patient_id,
+        application_no=generate_application_no(db, service_category.strip() or None),
+>>>>>>> f18247c (增加CART)
         full_name=values["fullName"],
         email=values["email"],
         phone=values["phone"],
         country=values["country"],
+<<<<<<< HEAD
+=======
+        service_category=service_category.strip() or None,
+>>>>>>> f18247c (增加CART)
         need_type=values["needType"],
         destination=destination.strip() or None,
         condition=values["condition"],

@@ -21,8 +21,15 @@ export function Footer({ lang, dict }: { lang: Locale; dict: Dictionary }) {
           <FooterCol title={dict.footer.quickLinks}>
             <FooterLink href={p("")}>{dict.nav.home}</FooterLink>
             <FooterLink href={p("/second-opinion")}>{dict.nav.secondOpinion}</FooterLink>
+<<<<<<< HEAD
             <FooterLink href={p("/services")}>{dict.nav.services}</FooterLink>
             <FooterLink href={p("/overseas-domestic")}>{dict.nav.overseasDomestic}</FooterLink>
+=======
+            <FooterLink href={p("/private-doctor")}>{dict.nav.privateDoctor}</FooterLink>
+            <FooterLink href={p("/basic-medical")}>{dict.nav.basicMedical}</FooterLink>
+            <FooterLink href={p("/cross-border-medical")}>{dict.nav.crossBorderMedical}</FooterLink>
+            <FooterLink href={p("/longevity-medical")}>{dict.nav.longevityMedical}</FooterLink>
+>>>>>>> f18247c (增加CART)
             <FooterLink href={p("/about")}>{dict.nav.about}</FooterLink>
           </FooterCol>
 

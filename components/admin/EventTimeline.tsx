@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { Clock, ArrowRight, UserCheck, FileText } from "lucide-react";
+=======
+import { Clock, ArrowRight, UserCheck, FileText, Mail, MessageSquare } from "lucide-react";
+>>>>>>> f18247c (增加CART)
 import type { Dictionary } from "@/lib/dictionaries";
 import { StatusBadge } from "@/components/StatusBadge";
 
@@ -42,6 +46,13 @@ export function EventTimeline({
       <UserCheck className="h-4 w-4" />
     ) : type === "NOTE_ADDED" ? (
       <FileText className="h-4 w-4" />
+<<<<<<< HEAD
+=======
+    ) : type === "EMAIL_SENT" ? (
+      <Mail className="h-4 w-4" />
+    ) : type === "COMM_LOGGED" ? (
+      <MessageSquare className="h-4 w-4" />
+>>>>>>> f18247c (增加CART)
     ) : (
       <Clock className="h-4 w-4" />
     );
@@ -52,6 +63,11 @@ export function EventTimeline({
       return payload && payload.type ? a.eventAssigned : a.eventUnassigned;
     }
     if (type === "NOTE_ADDED") return a.eventNoteAdded;
+<<<<<<< HEAD
+=======
+    if (type === "EMAIL_SENT") return a.eventEmailSent;
+    if (type === "COMM_LOGGED") return a.eventCommLogged;
+>>>>>>> f18247c (增加CART)
     return type;
   };
 

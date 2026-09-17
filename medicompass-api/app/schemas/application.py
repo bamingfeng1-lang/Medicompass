@@ -8,11 +8,19 @@ class AttachmentOut(CamelModel):
     original_name: str
     mime_type: str
     size: int
+<<<<<<< HEAD
+=======
+    kind: str
+>>>>>>> f18247c (增加CART)
     created_at: datetime
 
 
 class ApplicationListItem(CamelModel):
     id: int
+<<<<<<< HEAD
+=======
+    application_no: str | None
+>>>>>>> f18247c (增加CART)
     full_name: str
     email: str
     need_type: str
@@ -38,11 +46,21 @@ class ApplicationEventOut(CamelModel):
 class ApplicationDetail(CamelModel):
     id: int
     user_id: int | None
+<<<<<<< HEAD
+=======
+    patient_id: int | None
+    patient_no: str | None
+    application_no: str | None
+>>>>>>> f18247c (增加CART)
     full_name: str
     email: str
     phone: str
     country: str | None
     need_type: str
+<<<<<<< HEAD
+=======
+    service_category: str | None
+>>>>>>> f18247c (增加CART)
     service_slug: str | None
     service_name: str | None
     destination: str | None
@@ -72,6 +90,15 @@ class ApplicationDetail(CamelModel):
     translated_answer2: str | None
     translated_answer3: str | None
     final_bilingual_report_url: str | None
+<<<<<<< HEAD
+=======
+    # CAR-T specific fields
+    hospital: str | None
+    expert_doctor: str | None
+    arrival_datetime: datetime | None
+    flight_number: str | None
+    consultation_datetime: datetime | None
+>>>>>>> f18247c (增加CART)
     ai_summary: str | None
     ai_summary_status: str
     ai_summary_error: str | None
@@ -147,6 +174,10 @@ class SupremeUpdatePayload(CamelModel):
     email: str | None = None
     phone: str | None = None
     country: str | None = None
+<<<<<<< HEAD
+=======
+    service_category: str | None = None
+>>>>>>> f18247c (增加CART)
     need_type: str | None = None
     destination: str | None = None
     condition: str | None = None
@@ -163,3 +194,12 @@ class SupremeUpdatePayload(CamelModel):
     translated_answer1: str | None = None
     translated_answer2: str | None = None
     translated_answer3: str | None = None
+<<<<<<< HEAD
+=======
+    # CAR-T specific fields
+    hospital: str | None = None
+    expert_doctor: str | None = None
+    arrival_datetime: datetime | None = None
+    flight_number: str | None = None
+    consultation_datetime: datetime | None = None
+>>>>>>> f18247c (增加CART)

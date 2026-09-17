@@ -28,6 +28,10 @@ class ChangePasswordPayload(CamelModel):
 
 class PatientProfile(CamelModel):
     user_id: int
+<<<<<<< HEAD
+=======
+    patient_no: str | None
+>>>>>>> f18247c (增加CART)
     full_name: str
     email: str
     phone: str

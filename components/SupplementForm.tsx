@@ -1,5 +1,6 @@
 "use client";
 
+<<<<<<< HEAD
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, Send } from "lucide-react";
@@ -8,6 +9,15 @@ import type { MyApplicationDetail } from "@/lib/api";
 import { clientApi } from "@/lib/api";
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
+=======
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
+import type { Dictionary } from "@/lib/dictionaries";
+import type { MyApplicationDetail } from "@/lib/api";
+import { clientApi } from "@/lib/api";
+import { FileDropzone } from "@/components/FileDropzone";
+>>>>>>> f18247c (增加CART)
 
 export function SupplementForm({
   app,
@@ -18,8 +28,13 @@ export function SupplementForm({
 }) {
   const ac = dict.account;
   const f = dict.register.fields;
+<<<<<<< HEAD
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
+=======
+  const a = dict.apply;
+  const router = useRouter();
+>>>>>>> f18247c (增加CART)
 
   const [fullName, setFullName] = useState(app.fullName ?? "");
   const [email, setEmail] = useState(app.email ?? "");
@@ -30,6 +45,7 @@ export function SupplementForm({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
+<<<<<<< HEAD
   const pick = (list: FileList | null) => {
     if (!list) return;
     const next: File[] = [];
@@ -44,6 +60,8 @@ export function SupplementForm({
     setMsg(null);
   };
 
+=======
+>>>>>>> f18247c (增加CART)
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (busy) return;
@@ -112,6 +130,7 @@ export function SupplementForm({
 
         <div>
           <label className="field-label">{ac.supplementFileLabel}</label>
+<<<<<<< HEAD
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" onClick={() => fileRef.current?.click()}
               className="inline-flex items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
@@ -132,6 +151,20 @@ export function SupplementForm({
               ))}
             </ul>
           )}
+=======
+          <FileDropzone
+            files={files}
+            onChange={setFiles}
+            labels={{
+              cta: a.uploadCta,
+              hint: a.uploadHint,
+              empty: a.uploadEmpty,
+              remove: a.remove,
+              fileTooLarge: a.fileTooLarge,
+              fileTypeError: a.fileTypeError,
+            }}
+          />
+>>>>>>> f18247c (增加CART)
         </div>
 
         <button type="submit" disabled={busy}

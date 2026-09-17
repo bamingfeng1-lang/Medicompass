@@ -70,6 +70,10 @@ def send_email(
     body_text: str,
     body_html: str | None = None,
     inline_images: dict[str, Path | str] | None = None,
+<<<<<<< HEAD
+=======
+    attachments: list[tuple[str, bytes, str]] | None = None,
+>>>>>>> f18247c (增加CART)
 ) -> EmailResult:
     """Send an email to a recipient.
 
@@ -80,6 +84,10 @@ def send_email(
         body_text: Plain-text body. Trailing newline handling is up to caller.
         body_html: Optional HTML body, attached as an alternative part if given.
         inline_images: Optional {cid: path} map attached as inline (CID) images.
+<<<<<<< HEAD
+=======
+        attachments: Optional list of (filename, content_bytes, mime_type) tuples.
+>>>>>>> f18247c (增加CART)
 
     Returns an EmailResult; never raises on a send failure (it logs through the
     return value so callers can decide). If email is disabled, returns a
@@ -110,6 +118,18 @@ def send_email(
                 part.add_header("Content-ID", f"<{cid}>")
             except OSError:
                 continue
+<<<<<<< HEAD
+=======
+    if attachments:
+        for filename, content, mime_type in attachments:
+            maintype, subtype = mime_type.split("/", 1) if "/" in mime_type else ("application", "octet-stream")
+            msg.add_attachment(
+                content,
+                maintype=maintype,
+                subtype=subtype,
+                filename=filename,
+            )
+>>>>>>> f18247c (增加CART)
 
     try:
         if settings.SMTP_USE_SSL:
@@ -157,6 +177,7 @@ def send_email_with_greeting(
 # Template + brand logo live at the repo root (parent of the FastAPI project).
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATE_PATH = PROJECT_ROOT / "email_template.txt"
+<<<<<<< HEAD
 LOGO_PATH = PROJECT_ROOT / "img" / "logo" / "logo1.png"
 LOGO_CID = "brandlogo"
 
@@ -168,6 +189,51 @@ CONFIRM_SUBJECT = (
 )
 
 
+=======
+# Blank brand template for admin-composed custom emails: only the
+# {{ email_body_content }} placeholder is filled with the admin's text.
+BLANK_TEMPLATE_PATH = PROJECT_ROOT / "email_template_blank.txt"
+LOGO_PATH = PROJECT_ROOT / "img" / "logo" / "logo1.png"
+LOGO_CID = "brandlogo"
+
+# Need-type values → bilingual display names, used to fill the template
+# placeholders (#服务申请# / #服务申请的英文#) and the dynamic subject.
+# Keys accept either the Chinese or English value already stored in
+# application.need_type (see lib/dictionaries needTypeOptions).
+NEED_TYPE_NAMES = {
+    "国际二诊": ("国际二诊", "Second Opinion"),
+    "海外就医": ("海外就医", "Overseas Treatment"),
+    "健康体检": ("健康体检", "Health Check-up"),
+    "医疗养生": ("医疗养生", "Medical Wellness"),
+    "来华手术": ("来华手术", "Surgery in China"),
+    "Second Opinion": ("国际二诊", "Second Opinion"),
+    "Overseas Treatment": ("海外就医", "Overseas Treatment"),
+    "Health Check-up": ("健康体检", "Health Check-up"),
+    "Medical Wellness": ("医疗养生", "Medical Wellness"),
+    "Surgery in China": ("来华手术", "Surgery in China"),
+}
+
+# Subject template; the service name (CN + EN) is injected per need_type so
+# the subject reflects the actual service the client applied for.
+CONFIRM_SUBJECT_PREFIX = (
+    "【Medicompass】我们已收到您的{zh}申请 / "
+    "We have received your application for {en}"
+)
+
+
+def _need_type_names(need_type: str) -> tuple[str, str]:
+    """Return (chinese_name, english_name) for a need_type value.
+
+    Accepts either the Chinese or English value stored in need_type; unknown
+    values fall back to showing the raw value for both languages.
+    """
+    key = (need_type or "").strip()
+    if key in NEED_TYPE_NAMES:
+        return NEED_TYPE_NAMES[key]
+    return (key, key)
+
+
+>>>>>>> f18247c (增加CART)
 def send_application_confirmation_email(
     name: str,
     to_email: str,
@@ -175,9 +241,17 @@ def send_application_confirmation_email(
 ) -> EmailResult:
     """Send the post-application confirmation email to the client.
 
+<<<<<<< HEAD
     Reads email_template.txt (now UTF-8 HTML), uses it verbatim as the HTML
     body, inlines the brand logo (logo2.png) via CID in place of the template's
     placeholder <img>, and sends with a fixed subject. Plain-text fallback is
+=======
+    Reads email_template.txt (now UTF-8 HTML), fills the #服务申请# and
+    #服务申请的英文# placeholders with the bilingual names for `need_type` so
+    the body names the actual service the client applied for, inlines the brand
+    logo (logo2.png) via CID in place of the template's placeholder <img>, and
+    sends with a subject that matches that service. Plain-text fallback is
+>>>>>>> f18247c (增加CART)
     derived from the HTML.
     """
     if not _is_configured():
@@ -190,6 +264,7 @@ def send_application_confirmation_email(
     except UnicodeDecodeError:
         return EmailResult(False, "template_decode_error")
 
+<<<<<<< HEAD
     html = _template_with_logo(template)
     plain = _html_to_text(html)
 
@@ -197,12 +272,124 @@ def send_application_confirmation_email(
         name=name,
         to_email=to_email,
         subject=CONFIRM_SUBJECT,
+=======
+    cn_name, en_name = _need_type_names(need_type)
+
+    # Fill the bilingual service placeholders in the template so the body
+    # names the actual service the client applied for (not a fixed one).
+    html = _template_with_logo(template)
+    html = html.replace("#服务申请#", cn_name).replace("#服务申请的英文#", en_name)
+    plain = _html_to_text(html)
+
+    subject = CONFIRM_SUBJECT_PREFIX.format(zh=cn_name, en=en_name)
+
+    return send_email(
+        name=name,
+        to_email=to_email,
+        subject=subject,
+>>>>>>> f18247c (增加CART)
         body_text=plain,
         body_html=html,
         inline_images={LOGO_CID: LOGO_PATH},
     )
 
 
+<<<<<<< HEAD
+=======
+def _text_to_html_paragraphs(body_text: str) -> str:
+    """Convert admin plain-text body into safe HTML <p> paragraphs.
+
+    The text is HTML-escaped first (admin free text must never inject markup),
+    then split on newlines; blank lines become a spacer paragraph.
+    """
+    import html as _html
+
+    parts: list[str] = []
+    for line in body_text.split("\n"):
+        if line.strip():
+            parts.append(f"<p>{_html.escape(line)}</p>")
+        else:
+            parts.append("<p>&nbsp;</p>")
+    return "\n".join(parts)
+
+
+def normalize_emails(emails: list[str | None]) -> list[str]:
+    """Trim, drop empties, and de-duplicate (case-insensitive) email addresses."""
+    seen: set[str] = set()
+    result: list[str] = []
+    for raw in emails or []:
+        addr = (raw or "").strip()
+        if not addr:
+            continue
+        key = addr.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        result.append(addr)
+    return result
+
+
+def send_custom_email(
+    name: str,
+    to_emails: list[str],
+    subject: str,
+    body_text: str,
+    attachments: list[tuple[str, bytes, str]] | None = None,
+) -> EmailResult:
+    """Send an admin-composed custom email wrapped in the blank brand template.
+
+    The blank template (email_template_blank.txt) provides the branded header /
+    footer and a single {{ email_body_content }} placeholder. The admin's
+    plain-text body is HTML-escaped and rendered as paragraphs; the brand logo
+    is inlined via CID. One email is sent per de-duplicated recipient.
+
+    Returns an EmailResult whose `message` is one of:
+      sent / partial:<n>/<total> / no_recipients / template_missing /
+      template_decode_error / email_disabled / smtp_* errors (from send_email).
+    """
+    recipients = normalize_emails(to_emails)
+    if not recipients:
+        return EmailResult(False, "no_recipients")
+
+    try:
+        template = _load_template(BLANK_TEMPLATE_PATH)
+    except OSError:
+        return EmailResult(False, "template_missing")
+    except UnicodeDecodeError:
+        return EmailResult(False, "template_decode_error")
+
+    html = _template_with_logo(template)
+    body_html = _text_to_html_paragraphs(body_text or "")
+    html = html.replace("{{ email_body_content }}", body_html)
+    plain = _html_to_text(html)
+
+    if not _is_configured():
+        return EmailResult(False, "email_disabled")
+
+    sent = 0
+    last: EmailResult | None = None
+    for rcpt in recipients:
+        r = send_email(
+            name=name,
+            to_email=rcpt,
+            subject=subject,
+            body_text=plain,
+            body_html=html,
+            inline_images={LOGO_CID: LOGO_PATH},
+            attachments=attachments,
+        )
+        if r.ok:
+            sent += 1
+        last = r
+
+    if sent == len(recipients):
+        return EmailResult(True, "sent")
+    if sent == 0:
+        return EmailResult(False, last.message if last else "failed")
+    return EmailResult(False, f"partial:{sent}/{len(recipients)}")
+
+
+>>>>>>> f18247c (增加CART)
 def _load_template(path: Path) -> str:
     """Read the template (UTF-8) and return the HTML document."""
     raw = path.read_bytes()

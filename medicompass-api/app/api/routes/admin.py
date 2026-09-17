@@ -1,7 +1,11 @@
 from pathlib import Path
 from urllib.parse import quote
 
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, File, Form, Query, Request, UploadFile
+=======
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, Request, UploadFile
+>>>>>>> f18247c (增加CART)
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -18,10 +22,28 @@ from app.db.session import get_db
 from app.deps import get_current_admin
 from app.models.admin import Admin
 from app.models.application import Application, ApplicationEvent, Attachment
+<<<<<<< HEAD
 from app.models.registration import RegistrationDoctor, RegistrationProvider
 from app.models.status import APPLICATION_STATUS_SET, REGISTRATION_STATUS_SET
 from app.schemas.admin import LoginRequest, LoginResponse, OkResponse
 from app.schemas.auth import ChangePasswordPayload
+=======
+from app.models.communication import CommunicationLog
+from app.models.registration import (
+    RegistrationDoctor,
+    RegistrationPatient,
+    RegistrationProvider,
+)
+from app.models.status import APPLICATION_STATUS_SET, REGISTRATION_STATUS_SET
+from app.schemas.admin import LoginRequest, LoginResponse, OkResponse
+from app.schemas.auth import ChangePasswordPayload
+from app.schemas.communication import (
+    CommunicationCreate,
+    CommunicationLogOut,
+    SendEmailPayload,
+    SendEmailResult,
+)
+>>>>>>> f18247c (增加CART)
 from app.schemas.application import (
     ApplicationDetail,
     ApplicationEventOut,
@@ -43,6 +65,10 @@ from app.schemas.registration import (
     RegistrationReview,
 )
 from app.services.ai import summarize_application
+<<<<<<< HEAD
+=======
+from app.services.email import normalize_emails, send_custom_email
+>>>>>>> f18247c (增加CART)
 from app.services.storage import MAX_FILE_BYTES, is_allowed, save_upload
 from datetime import datetime
 import re
@@ -93,14 +119,36 @@ def _build_detail(db: Session, app: Application) -> ApplicationDetail:
     if app.assigned_provider_id:
         p = db.get(RegistrationProvider, app.assigned_provider_id)
         provider_name = p.org_name if p else None
+<<<<<<< HEAD
     return ApplicationDetail(
         id=app.id,
         user_id=app.user_id,
+=======
+
+    # 获取 patient_no
+    patient_no = None
+    if app.patient_id:
+        from app.models.registration import RegistrationPatient
+        patient = db.get(RegistrationPatient, app.patient_id)
+        if patient:
+            patient_no = patient.patient_no
+
+    return ApplicationDetail(
+        id=app.id,
+        user_id=app.user_id,
+        patient_id=app.patient_id,
+        patient_no=patient_no,
+        application_no=app.application_no,
+>>>>>>> f18247c (增加CART)
         full_name=app.full_name,
         email=app.email,
         phone=app.phone,
         country=app.country,
         need_type=app.need_type,
+<<<<<<< HEAD
+=======
+        service_category=app.service_category,
+>>>>>>> f18247c (增加CART)
         service_slug=app.service_slug,
         service_name=app.service_name,
         destination=app.destination,
@@ -130,6 +178,15 @@ def _build_detail(db: Session, app: Application) -> ApplicationDetail:
         translated_answer2=app.translated_answer2,
         translated_answer3=app.translated_answer3,
         final_bilingual_report_url=app.final_bilingual_report_url,
+<<<<<<< HEAD
+=======
+        # CAR-T specific fields
+        hospital=app.hospital,
+        expert_doctor=app.expert_doctor,
+        arrival_datetime=app.arrival_datetime,
+        flight_number=app.flight_number,
+        consultation_datetime=app.consultation_datetime,
+>>>>>>> f18247c (增加CART)
         ai_summary=app.ai_summary,
         ai_summary_status=app.ai_summary_status,
         ai_summary_error=app.ai_summary_error,
@@ -208,10 +265,21 @@ def admin_change_password(
 # ── applications ─────────────────────────────────────────────────────
 @router.get("/applications", response_model=list[ApplicationListItem])
 def list_applications(
+<<<<<<< HEAD
     need_type: str | None = Query(default=None, alias="needType"),
     db: Session = Depends(get_db),
     _: Admin = Depends(get_current_admin),
 ):
+=======
+    service_category: str | None = Query(default=None, alias="serviceCategory"),
+    search: str | None = Query(default=None),
+    status: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_admin),
+):
+    from sqlalchemy import or_
+
+>>>>>>> f18247c (增加CART)
     count_subq = (
         select(Attachment.application_id, func.count(Attachment.id).label("cnt"))
         .group_by(Attachment.application_id)
@@ -222,12 +290,31 @@ def list_applications(
         .outerjoin(count_subq, count_subq.c.application_id == Application.id)
         .order_by(Application.created_at.desc())
     )
+<<<<<<< HEAD
     if need_type:
         stmt = stmt.where(Application.need_type == need_type)
+=======
+    if service_category:
+        stmt = stmt.where(Application.service_category == service_category)
+    if status:
+        stmt = stmt.where(Application.status == status)
+    if search:
+        search_term = f"%{search}%"
+        stmt = stmt.where(
+            or_(
+                Application.full_name.like(search_term),
+                Application.application_no.like(search_term),
+            )
+        )
+>>>>>>> f18247c (增加CART)
     rows = db.execute(stmt).all()
     return [
         ApplicationListItem(
             id=app.id,
+<<<<<<< HEAD
+=======
+            application_no=app.application_no,
+>>>>>>> f18247c (增加CART)
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
@@ -258,6 +345,10 @@ def get_application(
 @router.post("/applications/{application_id}/summarize", response_model=SummarizeResult)
 def summarize(
     application_id: int,
+<<<<<<< HEAD
+=======
+    background: BackgroundTasks,
+>>>>>>> f18247c (增加CART)
     db: Session = Depends(get_db),
     _: Admin = Depends(get_current_admin),
 ):
@@ -265,11 +356,22 @@ def summarize(
     if app is None:
         return JSONResponse({"error": "not_found"}, status_code=404)
 
+<<<<<<< HEAD
     # Run synchronously so the admin gets the refreshed result immediately
     # (mirrors the original route which awaits summarizeApplication).
     summarize_application(application_id)
 
     db.refresh(app)
+=======
+    # Run AI summarization in background to avoid blocking the request
+    # Frontend can poll the application detail to check the status
+    app.ai_summary_status = "pending"
+    app.ai_summary_error = None
+    db.commit()
+    
+    background.add_task(summarize_application, application_id)
+    
+>>>>>>> f18247c (增加CART)
     return SummarizeResult(
         ai_summary=app.ai_summary,
         ai_summary_status=app.ai_summary_status,
@@ -312,6 +414,10 @@ _EDITABLE_FIELDS = [
     "email",
     "phone",
     "country",
+<<<<<<< HEAD
+=======
+    "service_category",
+>>>>>>> f18247c (增加CART)
     "need_type",
     "destination",
     "condition",
@@ -328,6 +434,15 @@ _EDITABLE_FIELDS = [
     "translated_answer1",
     "translated_answer2",
     "translated_answer3",
+<<<<<<< HEAD
+=======
+    # CAR-T specific fields
+    "hospital",
+    "expert_doctor",
+    "arrival_datetime",
+    "flight_number",
+    "consultation_datetime",
+>>>>>>> f18247c (增加CART)
 ]
 
 _EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
@@ -613,6 +728,214 @@ def get_final_report_admin(
     })
 
 
+<<<<<<< HEAD
+=======
+# ── custom email & communication log ─────────────────────────────────
+_COMM_CHANNELS = {"email", "phone", "meeting", "other"}
+
+
+def _client_emails(db: Session, app: Application) -> list[str]:
+    """Recipient inboxes for an application.
+
+    Set = application.email ∪ (the email of the user's latest patient
+    registration, when the application is linked to a user account).
+    Trimmed, lowercased and de-duplicated.
+    """
+    candidates: list[str | None] = [app.email]
+    if app.user_id:
+        patient = (
+            db.query(RegistrationPatient)
+            .filter(RegistrationPatient.user_id == app.user_id)
+            .order_by(RegistrationPatient.created_at.desc())
+            .first()
+        )
+        if patient is not None:
+            candidates.append(patient.email)
+    return normalize_emails(candidates)
+
+
+@router.post("/applications/{application_id}/send-email", response_model=SendEmailResult)
+async def send_application_email(
+    application_id: int,
+    subject: str = Form(""),
+    content: str = Form(""),
+    attachments: list[UploadFile] = File(default=[]),
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(get_current_admin),
+):
+    """Send an admin-composed custom email to the application's client inbox(es).
+
+    Recipients are de-duplicated (application.email + the linked user's latest
+    patient-profile email); identical addresses receive only one email. The
+    body is rendered into the blank brand template. Every send attempt is
+    recorded in communication_log + the event timeline, including when the
+    mail service is disabled or the send fails.
+
+    Uploaded attachments are sent with the email and also saved as application
+    attachments (kind='email_attachment') for future reference.
+    """
+    app = db.get(Application, application_id)
+    if app is None:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+
+    subject = subject.strip()
+    content = content.strip()
+    if not subject or not content:
+        return JSONResponse({"error": "missing_fields"}, status_code=400)
+
+    recipients = _client_emails(db, app)
+    if not recipients:
+        return JSONResponse({"error": "no_recipients"}, status_code=400)
+
+    # Read and validate uploaded files
+    email_attachments: list[tuple[str, bytes, str]] = []
+    saved_attachments: list[dict] = []
+    for f in attachments or []:
+        file_content = await f.read()
+        if len(file_content) == 0:
+            continue
+        if len(file_content) > MAX_FILE_BYTES:
+            return JSONResponse({"error": "file_too_large", "name": f.filename}, status_code=400)
+        mime = f.content_type or "application/octet-stream"
+        if not is_allowed(mime, len(file_content)):
+            return JSONResponse(
+                {"error": "file_type_not_allowed", "name": f.filename}, status_code=400
+            )
+        email_attachments.append((f.filename or "file", file_content, mime))
+        # Save file for attachment record
+        saved = save_upload(app.id, f.filename or "file", file_content, mime)
+        saved_attachments.append(saved)
+
+    result = send_custom_email(
+        name=app.full_name,
+        to_emails=recipients,
+        subject=subject,
+        body_text=content,
+        attachments=email_attachments if email_attachments else None,
+    )
+
+    if result.message == "email_disabled":
+        email_status = "disabled"
+    elif result.ok:
+        email_status = "sent"
+    else:
+        email_status = "failed"
+
+    # Save uploaded files as application attachments (kind='email_attachment')
+    for saved in saved_attachments:
+        db.add(
+            Attachment(
+                application_id=app.id,
+                original_name=saved["original_name"],
+                stored_path=saved["stored_path"],
+                mime_type=saved["mime_type"],
+                size=saved["size"],
+                kind="email_attachment",
+            )
+        )
+
+    db.add(
+        CommunicationLog(
+            application_id=app.id,
+            channel="email",
+            direction="outbound",
+            subject=subject[:255],
+            content=content,
+            recipients=", ".join(recipients)[:512],
+            email_status=email_status,
+            actor_name=admin.username,
+        )
+    )
+    _add_event(
+        db,
+        app.id,
+        "EMAIL_SENT",
+        admin.username,
+        payload={
+            "subject": subject[:255],
+            "recipients": recipients,
+            "status": email_status,
+            "attachment_count": len(saved_attachments),
+        },
+    )
+    db.commit()
+
+    return SendEmailResult(
+        ok=result.ok,
+        email_status=email_status,
+        recipients=recipients,
+    )
+
+
+@router.get(
+    "/applications/{application_id}/communications",
+    response_model=list[CommunicationLogOut],
+)
+def list_communications(
+    application_id: int,
+    db: Session = Depends(get_db),
+    _: Admin = Depends(get_current_admin),
+):
+    """List the communication history for an application (newest first)."""
+    app = db.get(Application, application_id)
+    if app is None:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+    rows = (
+        db.query(CommunicationLog)
+        .filter(CommunicationLog.application_id == application_id)
+        .order_by(CommunicationLog.created_at.desc(), CommunicationLog.id.desc())
+        .all()
+    )
+    return [CommunicationLogOut.model_validate(r) for r in rows]
+
+
+@router.post(
+    "/applications/{application_id}/communications",
+    response_model=CommunicationLogOut,
+)
+def add_communication(
+    application_id: int,
+    payload: CommunicationCreate,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(get_current_admin),
+):
+    """Manually log a phone / meeting / other-channel communication."""
+    app = db.get(Application, application_id)
+    if app is None:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+
+    channel = (payload.channel or "").strip()
+    if channel not in _COMM_CHANNELS:
+        return JSONResponse({"error": "invalid_channel"}, status_code=400)
+    subject = (payload.subject or "").strip() or None
+    content = (payload.content or "").strip() or None
+    if not subject and not content:
+        return JSONResponse({"error": "missing_fields"}, status_code=400)
+
+    log = CommunicationLog(
+        application_id=app.id,
+        channel=channel,
+        direction="outbound",
+        subject=subject[:255] if subject else None,
+        content=content,
+        recipients=None,
+        email_status=None,
+        actor_name=admin.username,
+    )
+    db.add(log)
+    _add_event(
+        db,
+        app.id,
+        "COMM_LOGGED",
+        admin.username,
+        payload={"channel": channel, "subject": subject},
+    )
+    db.commit()
+    db.refresh(log)
+    return CommunicationLogOut.model_validate(log)
+
+
+>>>>>>> f18247c (增加CART)
 # ── attachments ──────────────────────────────────────────────────────
 @router.get("/attachments/{attachment_id}")
 def get_attachment(

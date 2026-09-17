@@ -10,6 +10,11 @@ from app.models.application import Application
 from app.models.user import User
 from app.schemas.inquiry import InquiryCreate, InquiryCreated
 from app.services.catalog import get_service_name
+<<<<<<< HEAD
+=======
+from app.api.routes.register import _resolve_patient_by_phone
+from app.core.patient_no import generate_application_no
+>>>>>>> f18247c (增加CART)
 
 router = APIRouter(prefix="/api/inquiries", tags=["inquiries"])
 
@@ -49,8 +54,25 @@ def create_inquiry(
     if email and not EMAIL_RE.match(email):
         return JSONResponse({"error": "invalid_email"}, status_code=400)
 
+<<<<<<< HEAD
     application = Application(
         user_id=user.id if user else None,
+=======
+    # Resolve patient by phone
+    patient_id = None
+    user_id = user.id if user else None
+
+    if phone:
+        patient = _resolve_patient_by_phone(db, phone, full_name, lang)
+        patient_id = patient.id
+        if patient.user_id and not user_id:
+            user_id = patient.user_id
+
+    application = Application(
+        user_id=user_id,
+        patient_id=patient_id,
+        application_no=generate_application_no(db, None),  # Inquiries don't have service_category
+>>>>>>> f18247c (增加CART)
         full_name=full_name,
         email=email or "",
         phone=phone,

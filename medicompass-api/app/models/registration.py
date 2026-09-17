@@ -11,6 +11,10 @@ class RegistrationPatient(Base):
     __tablename__ = "registration_patient"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+<<<<<<< HEAD
+=======
+    patient_no: Mapped[str | None] = mapped_column(String(32), nullable=True, unique=True, comment="客户编号 PT+YYMMDD+NNN")
+>>>>>>> f18247c (增加CART)
     user_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medicompass Notification</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f6f8fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .email-container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid #e1e4e8; }
+    .header { padding: 32px 40px 20px 40px; border-bottom: 1px solid #f0f2f5; }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    .logo-text { font-size: 20px; font-weight: 700; color: #0f2942; letter-spacing: 0.5px; }
+    
+    /* 核心动态正文区域 */
+    .content-body { padding: 40px; }
+    .dynamic-content { font-size: 14px; line-height: 1.6; color: #4a5568; }
+    
+    /* 规范用户可能输入的富文本样式 */
+    .dynamic-content p { margin: 0 0 16px 0; }
+    .dynamic-content p:last-child { margin-bottom: 0; }
+    .dynamic-content strong { color: #0f2942; }
+    .dynamic-content a { color: #0066cc; text-decoration: none; font-weight: 500; }
+    .dynamic-content a:hover { text-decoration: underline; }
+    .dynamic-content ul, .dynamic-content ol { margin: 0 0 16px 20px; padding: 0; }
+    .dynamic-content li { margin-bottom: 6px; }
+    
+    /* 统一的落款与页脚 */
+    .sign-off { margin-top: 32px; border-top: 1px dashed #e1e4e8; padding-top: 20px; font-size: 13px; color: #718096; line-height: 1.5; }
+    .footer { background-color: #fafbfc; padding: 24px 40px; text-align: center; border-top: 1px solid #f0f2f5; }
+    .footer p { font-size: 12px; color: #a0aec0; margin: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="email-container">
+    <!-- 统一品牌头部 -->
+    <div class="header">
+      <div class="logo-area">
+        <img src="https://medicomai.com" alt="Medicompass" width="36" height="36" style="display:block; border:0;">
+        <span class="logo-text">Medicompass 迈蒂康</span>
+      </div>
+    </div>
+
+    <!-- 用户自由书写的正文区 -->
+    <div class="content-body">
+      <div class="dynamic-content">
+        <!-- 后端直接将用户填写的文本/HTML渲染并替换在此处 -->
+        {{ email_body_content }}
+      </div>
+      
+      <!-- 统一的落款 -->
+      <div class="sign-off">
+        <strong>迈蒂康 (Medicompass) 全球服务团队</strong><br>
+        <span style="font-size: 12px; color: #a0aec0;">The Medicompass Global Service Team</span>
+      </div>
+    </div>
+
+    <!-- 统一页脚 -->
+    <div class="footer">
+      <p>This is a service notification from Medicompass platform.</p>
+      <p style="margin-top: 4px;">© 2026 Medicompass. All rights reserved.</p>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -5,12 +5,20 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
 
+<<<<<<< HEAD
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+=======
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Request, UploadFile
+>>>>>>> f18247c (增加CART)
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+<<<<<<< HEAD
+=======
+from app.core.patient_no import generate_patient_no
+>>>>>>> f18247c (增加CART)
 from app.core.security import (
     MAX_AGE_SECONDS,
     USER_SESSION_COOKIE,
@@ -52,6 +60,10 @@ from app.schemas.registration import (
     ProviderProfileUpdate,
     RegistrationAttachmentOut,
 )
+<<<<<<< HEAD
+=======
+from app.services.ai import summarize_application
+>>>>>>> f18247c (增加CART)
 from app.services.storage import (
     MAX_FILE_BYTES,
     MAX_FINAL_REPORT_BYTES,
@@ -157,8 +169,16 @@ def my_profile(
 ):
     """Return the logged-in user's patient registration profile.
 
+<<<<<<< HEAD
     Used to prefill the second-opinion application form. Returns 404 if the
     user has no patient profile. Does not modify any profile data.
+=======
+    Used to prefill the second-opinion application form. Every logged-in
+    customer is guaranteed to have a patient profile: if none exists yet
+    (e.g. legacy accounts, or an account created outside the patient
+    sign-up flow), a minimal profile is created on the fly so the user can
+    proceed to book a second-opinion consultation immediately.
+>>>>>>> f18247c (增加CART)
     """
     patient = (
         db.query(RegistrationPatient)
@@ -167,6 +187,7 @@ def my_profile(
         .first()
     )
     if patient is None:
+<<<<<<< HEAD
         return JSONResponse({"error": "no_patient_profile"}, status_code=404)
     return PatientProfile(
         user_id=user.id,
@@ -177,6 +198,35 @@ def my_profile(
         need_type=patient.need_type,
         destination=patient.destination,
         condition=patient.condition,
+=======
+        # Lazy-create a minimal patient profile so any authenticated user
+        # can submit a second-opinion application without re-registering.
+        patient = RegistrationPatient(
+            user_id=user.id,
+            patient_no=generate_patient_no(db),
+            full_name=user.phone,
+            email="",
+            phone=user.phone,
+            country=None,
+            need_type=None,
+            destination=None,
+            condition=None,
+            lang="zh",
+        )
+        db.add(patient)
+        db.commit()
+        db.refresh(patient)
+    return PatientProfile(
+        user_id=user.id,
+        patient_no=patient.patient_no,
+        full_name=patient.full_name,
+        email=patient.email or "",
+        phone=patient.phone,
+        country=patient.country or "",
+        need_type=patient.need_type or "",
+        destination=patient.destination,
+        condition=patient.condition or "",
+>>>>>>> f18247c (增加CART)
     )
 
 
@@ -187,6 +237,18 @@ def my_applications(
     user: User = Depends(get_current_user),
 ):
     """List the applications/enquiries that belong to the logged-in user."""
+<<<<<<< HEAD
+=======
+    from sqlalchemy import or_
+
+    # Get all patient IDs for this user
+    patient_ids = [
+        p.id for p in db.query(RegistrationPatient.id).filter(
+            RegistrationPatient.user_id == user.id
+        ).all()
+    ]
+
+>>>>>>> f18247c (增加CART)
     count_subq = (
         select(Attachment.application_id, func.count(Attachment.id).label("cnt"))
         .group_by(Attachment.application_id)
@@ -195,13 +257,26 @@ def my_applications(
     stmt = (
         select(Application, func.coalesce(count_subq.c.cnt, 0))
         .outerjoin(count_subq, count_subq.c.application_id == Application.id)
+<<<<<<< HEAD
         .where(Application.user_id == user.id)
+=======
+        .where(
+            or_(
+                Application.user_id == user.id,
+                Application.patient_id.in_(patient_ids) if patient_ids else False,
+            )
+        )
+>>>>>>> f18247c (增加CART)
         .order_by(Application.created_at.desc())
     )
     rows = db.execute(stmt).all()
     return [
         ApplicationListItem(
             id=app.id,
+<<<<<<< HEAD
+=======
+            application_no=app.application_no,
+>>>>>>> f18247c (增加CART)
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
@@ -248,6 +323,10 @@ def my_assigned_applications(
     return [
         ApplicationListItem(
             id=app.id,
+<<<<<<< HEAD
+=======
+            application_no=app.application_no,
+>>>>>>> f18247c (增加CART)
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
@@ -298,7 +377,19 @@ def my_application(
 ):
     """Return one of the logged-in user's applications; 404 if not owned."""
     app = db.get(Application, application_id)
+<<<<<<< HEAD
     if app is None or app.user_id != user.id:
+=======
+    if app is None:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+    # Check ownership: either user_id matches, or patient_id belongs to this user
+    owned = app.user_id == user.id
+    if not owned and app.patient_id:
+        patient = db.get(RegistrationPatient, app.patient_id)
+        if patient and patient.user_id == user.id:
+            owned = True
+    if not owned:
+>>>>>>> f18247c (增加CART)
         return JSONResponse({"error": "not_found"}, status_code=404)
     return _application_detail(db, app)
 
@@ -310,6 +401,10 @@ EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 @router.post("/applications/{application_id}/supplement", response_model=ApplicationDetail)
 async def client_submit_supplement(
     application_id: int,
+<<<<<<< HEAD
+=======
+    background: BackgroundTasks,
+>>>>>>> f18247c (增加CART)
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
     full_name: str = Form("", alias="fullName"),
@@ -325,7 +420,19 @@ async def client_submit_supplement(
     application to PENDING_REVIEW so the admin can re-review and re-run the flow.
     """
     app = db.get(Application, application_id)
+<<<<<<< HEAD
     if app is None or app.user_id != user.id:
+=======
+    if app is None:
+        return JSONResponse({"error": "not_found"}, status_code=404)
+    # Check ownership: either user_id matches, or patient_id belongs to this user
+    owned = app.user_id == user.id
+    if not owned and app.patient_id:
+        patient = db.get(RegistrationPatient, app.patient_id)
+        if patient and patient.user_id == user.id:
+            owned = True
+    if not owned:
+>>>>>>> f18247c (增加CART)
         return JSONResponse({"error": "not_found"}, status_code=404)
     if app.status not in APPLICATION_CLIENT_EDITABLE:
         return JSONResponse({"error": "not_editable"}, status_code=409)
@@ -396,6 +503,13 @@ async def client_submit_supplement(
     )
     db.commit()
     db.refresh(app)
+<<<<<<< HEAD
+=======
+
+    # Re-run AI summarization on the updated content + attachments.
+    background.add_task(summarize_application, app.id)
+
+>>>>>>> f18247c (增加CART)
     return _application_detail(db, app)
 
 
@@ -427,14 +541,35 @@ def _provider_name(db: Session, provider_id: int | None) -> str | None:
 
 
 def _application_detail(db: Session, app: Application) -> ApplicationDetail:
+<<<<<<< HEAD
     return ApplicationDetail(
         id=app.id,
         user_id=app.user_id,
+=======
+    # 获取 patient_no
+    patient_no = None
+    if app.patient_id:
+        from app.models.registration import RegistrationPatient
+        patient = db.get(RegistrationPatient, app.patient_id)
+        if patient:
+            patient_no = patient.patient_no
+
+    return ApplicationDetail(
+        id=app.id,
+        user_id=app.user_id,
+        patient_id=app.patient_id,
+        patient_no=patient_no,
+        application_no=app.application_no,
+>>>>>>> f18247c (增加CART)
         full_name=app.full_name,
         email=app.email,
         phone=app.phone,
         country=app.country,
         need_type=app.need_type,
+<<<<<<< HEAD
+=======
+        service_category=app.service_category,
+>>>>>>> f18247c (增加CART)
         service_slug=app.service_slug,
         service_name=app.service_name,
         destination=app.destination,
@@ -464,6 +599,15 @@ def _application_detail(db: Session, app: Application) -> ApplicationDetail:
         translated_answer2=app.translated_answer2,
         translated_answer3=app.translated_answer3,
         final_bilingual_report_url=app.final_bilingual_report_url,
+<<<<<<< HEAD
+=======
+        # CAR-T specific fields
+        hospital=app.hospital,
+        expert_doctor=app.expert_doctor,
+        arrival_datetime=app.arrival_datetime,
+        flight_number=app.flight_number,
+        consultation_datetime=app.consultation_datetime,
+>>>>>>> f18247c (增加CART)
         ai_summary=app.ai_summary,
         ai_summary_status=app.ai_summary_status,
         ai_summary_error=app.ai_summary_error,
@@ -710,7 +854,11 @@ async def _upload_reg_license(db: Session, reg_type: str, reg_id: int, file: Upl
 
 @router.post("/registration/provider/license")
 async def upload_provider_license(
+<<<<<<< HEAD
     license_file: UploadFile = File(..., alias="licenseFile"),
+=======
+    license_files: list[UploadFile] = File(default=[], alias="licenseFile"),
+>>>>>>> f18247c (增加CART)
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -719,13 +867,28 @@ async def upload_provider_license(
         return JSONResponse({"error": "not_found"}, status_code=404)
     if row.status not in REGISTRATION_EDITABLE:
         return JSONResponse({"error": "not_editable"}, status_code=409)
+<<<<<<< HEAD
     err = await _upload_reg_license(db, "provider", row.id, license_file)
     return err if err is not None else {"ok": True}
+=======
+    files = [f for f in license_files if f is not None and f.filename]
+    if not files:
+        return JSONResponse({"error": "empty_file"}, status_code=400)
+    for f in files:
+        err = await _upload_reg_license(db, "provider", row.id, f)
+        if err is not None:
+            return err
+    return {"ok": True, "count": len(files)}
+>>>>>>> f18247c (增加CART)
 
 
 @router.post("/registration/doctor/license")
 async def upload_doctor_license(
+<<<<<<< HEAD
     license_file: UploadFile = File(..., alias="licenseFile"),
+=======
+    license_files: list[UploadFile] = File(default=[], alias="licenseFile"),
+>>>>>>> f18247c (增加CART)
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -734,8 +897,19 @@ async def upload_doctor_license(
         return JSONResponse({"error": "not_found"}, status_code=404)
     if row.status not in REGISTRATION_EDITABLE:
         return JSONResponse({"error": "not_editable"}, status_code=409)
+<<<<<<< HEAD
     err = await _upload_reg_license(db, "doctor", row.id, license_file)
     return err if err is not None else {"ok": True}
+=======
+    files = [f for f in license_files if f is not None and f.filename]
+    if not files:
+        return JSONResponse({"error": "empty_file"}, status_code=400)
+    for f in files:
+        err = await _upload_reg_license(db, "doctor", row.id, f)
+        if err is not None:
+            return err
+    return {"ok": True, "count": len(files)}
+>>>>>>> f18247c (增加CART)
 
 
 @router.delete("/registration/{reg_type}/license/{attachment_id}")

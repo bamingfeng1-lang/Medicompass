@@ -54,6 +54,10 @@ export default async function AssignedApplicationsPage({
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
+<<<<<<< HEAD
+=======
+                  <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
+>>>>>>> f18247c (增加CART)
                   <th className="px-5 py-3 font-medium">{tk.colNeed}</th>
                   <th className="px-5 py-3 font-medium">{tk.colService}</th>
                   <th className="px-5 py-3 font-medium">{tk.colCustomer}</th>
@@ -66,6 +70,14 @@ export default async function AssignedApplicationsPage({
               <tbody className="divide-y divide-slate-100">
                 {apps.map((app) => (
                   <tr key={app.id} className="transition hover:bg-slate-50/60">
+<<<<<<< HEAD
+=======
+                    <td className="px-5 py-3">
+                      <span className="font-mono text-sm text-brand-deep">
+                        {app.applicationNo || "—"}
+                      </span>
+                    </td>
+>>>>>>> f18247c (增加CART)
                     <td className="px-5 py-3 font-medium text-brand-950">{app.needType}</td>
                     <td className="px-5 py-3 text-slate-600">{app.serviceName || app.message || "—"}</td>
                     <td className="px-5 py-3 text-slate-600">{app.fullName}</td>

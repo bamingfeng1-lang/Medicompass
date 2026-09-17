@@ -22,11 +22,22 @@ class Application(Base):
     user_id: Mapped[int | None] = mapped_column(
         BigInteger, ForeignKey("user.id", ondelete="SET NULL"), nullable=True
     )
+<<<<<<< HEAD
+=======
+    patient_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("registration_patient.id", ondelete="SET NULL"), nullable=True
+    )
+    application_no: Mapped[str | None] = mapped_column(String(64), nullable=True, unique=True, comment="申请编号 客户编号+NNN")
+>>>>>>> f18247c (增加CART)
     full_name: Mapped[str] = mapped_column(String(191), nullable=False)
     email: Mapped[str] = mapped_column(String(191), nullable=False)
     phone: Mapped[str] = mapped_column(String(64), nullable=False)
     country: Mapped[str | None] = mapped_column(String(128), nullable=True)
     need_type: Mapped[str] = mapped_column(String(64), nullable=False)
+<<<<<<< HEAD
+=======
+    service_category: Mapped[str | None] = mapped_column(String(64), nullable=True)
+>>>>>>> f18247c (增加CART)
     service_slug: Mapped[str | None] = mapped_column(String(128), nullable=True)
     service_name: Mapped[str | None] = mapped_column(String(191), nullable=True)
     destination: Mapped[str | None] = mapped_column(String(191), nullable=True)
@@ -56,6 +67,15 @@ class Application(Base):
     final_bilingual_report_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     assigned_doctor_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
     assigned_provider_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+<<<<<<< HEAD
+=======
+    # CAR-T specific fields
+    hospital: Mapped[str | None] = mapped_column(String(255), nullable=True, comment="医院")
+    expert_doctor: Mapped[str | None] = mapped_column(String(255), nullable=True, comment="专家医生")
+    arrival_datetime: Mapped[datetime | None] = mapped_column(DATETIME(fsp=3), nullable=True, comment="来华日期时间")
+    flight_number: Mapped[str | None] = mapped_column(String(64), nullable=True, comment="航班号")
+    consultation_datetime: Mapped[datetime | None] = mapped_column(DATETIME(fsp=3), nullable=True, comment="看诊日期时间")
+>>>>>>> f18247c (增加CART)
     created_at: Mapped[datetime] = mapped_column(
         DATETIME(fsp=3), nullable=False, server_default=text("CURRENT_TIMESTAMP(3)")
     )

@@ -31,6 +31,10 @@ SERVICES: dict[str, dict[str, str]] = {
     "medical-nutrients": {"zh": "医疗级营养素", "en": "Medical-Grade Nutrients"},
     "iv-nutrition": {"zh": "静脉营养疗程", "en": "IV Nutrition Therapy"},
     "medical-package": {"zh": "医疗套餐", "en": "Medical Package"},
+<<<<<<< HEAD
+=======
+    "appointment": {"zh": "预约服务", "en": "Appointment Service"},
+>>>>>>> f18247c (增加CART)
 }
 
 

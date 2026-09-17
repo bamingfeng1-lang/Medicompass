@@ -29,6 +29,7 @@ export function SummaryPanel({ id, dict, initialSummary, initialStatus, initialE
         method: "POST",
         credentials: "include",
       });
+<<<<<<< HEAD
       const data = await res.json();
       setSummary(data.aiSummary ?? null);
       setStatus(data.aiSummaryStatus ?? "failed");
@@ -38,6 +39,53 @@ export function SummaryPanel({ id, dict, initialSummary, initialStatus, initialE
       setStatus("failed");
       setError(a.aiFailed);
     } finally {
+=======
+      
+      if (!res.ok) {
+        throw new Error("Failed to start AI summarization");
+      }
+      
+      const data = await res.json();
+      setStatus(data.aiSummaryStatus ?? "pending");
+      
+      // Poll for completion
+      const pollInterval = setInterval(async () => {
+        try {
+          const detailRes = await fetch(clientApi(`/api/admin/applications/${id}`), {
+            credentials: "include",
+          });
+          if (detailRes.ok) {
+            const detail = await detailRes.json();
+            const newStatus = detail.aiSummaryStatus;
+            
+            if (newStatus === "done" || newStatus === "failed") {
+              clearInterval(pollInterval);
+              setSummary(detail.aiSummary ?? null);
+              setStatus(newStatus);
+              setError(detail.aiSummaryError ?? null);
+              setRunning(false);
+              router.refresh();
+            }
+          }
+        } catch (err) {
+          console.error("Polling error:", err);
+        }
+      }, 3000); // Poll every 3 seconds
+      
+      // Stop polling after 5 minutes
+      setTimeout(() => {
+        clearInterval(pollInterval);
+        if (running) {
+          setRunning(false);
+          setStatus("failed");
+          setError("AI 总结超时，请稍后重试");
+        }
+      }, 300000);
+      
+    } catch {
+      setStatus("failed");
+      setError(a.aiFailed);
+>>>>>>> f18247c (增加CART)
       setRunning(false);
     }
   };

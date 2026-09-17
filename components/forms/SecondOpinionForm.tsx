@@ -1,11 +1,17 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+<<<<<<< HEAD
 import { CheckCircle2, Upload, X, FileText } from "lucide-react";
+=======
+import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
+>>>>>>> f18247c (增加CART)
 import Link from "next/link";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
 import { clientApi } from "@/lib/api";
+<<<<<<< HEAD
 
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const ALLOWED = [
@@ -16,23 +22,33 @@ const ALLOWED = [
   "image/heic",
   "image/heif",
 ];
+=======
+import { FileDropzone } from "@/components/FileDropzone";
+>>>>>>> f18247c (增加CART)
 
 type Values = {
   fullName: string;
   email: string;
   phone: string;
   country: string;
+<<<<<<< HEAD
+=======
+  serviceCategory: string;
+>>>>>>> f18247c (增加CART)
   needType: string;
   destination: string;
   condition: string;
 };
 
+<<<<<<< HEAD
 function fmtSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+=======
+>>>>>>> f18247c (增加CART)
 export function SecondOpinionForm({
   lang,
   dict,
@@ -51,6 +67,7 @@ export function SecondOpinionForm({
   const a = dict.apply;
   const f = t.fields;
   const ph = t.placeholders;
+<<<<<<< HEAD
 
   const [values, setValues] = useState<Values>({
     fullName: initialValues?.fullName ?? "",
@@ -60,13 +77,54 @@ export function SecondOpinionForm({
     needType: initialValues?.needType ?? f.needTypeOptions[0],
     destination: initialValues?.destination ?? "",
     condition: initialValues?.condition ?? "",
+=======
+  const router = useRouter();
+
+  const [values, setValues] = useState<Values>(() => {
+    // 根据 serviceCategory 获取对应的 needType 选项
+    const getInitialNeedType = () => {
+      if (initialValues?.needType) return initialValues.needType;
+      if (initialValues?.serviceCategory) {
+        const categoryMap: Record<string, string[]> = {
+          "国际二诊服务": ["国际二诊"],
+          "CAR-T": ["CAR-T"],
+          "私人医生": ["健康档案建立"],
+          "基础医疗": ["医疗预约"],
+          "跨境国际医疗": ["医疗档案建立"],
+          "长寿医学": ["医疗档案建立"],
+          "Second Opinion Service": ["Second Opinion"],
+          "Private Doctor": ["Health Record"],
+          "Basic Medical": ["Outpatient Access"],
+          "Cross-border Medical": ["Medical Record"],
+          "Longevity Medical": ["Medical Record"],
+        };
+        const options = categoryMap[initialValues.serviceCategory];
+        if (options && options.length > 0) return options[0];
+      }
+      return f.needTypeOptions[0];
+    };
+
+    return {
+      fullName: initialValues?.fullName ?? "",
+      email: initialValues?.email ?? "",
+      phone: initialValues?.phone ?? "",
+      country: initialValues?.country ?? "",
+      serviceCategory: initialValues?.serviceCategory || f.serviceCategoryOptions[0],
+      needType: getInitialNeedType(),
+      destination: initialValues?.destination ?? "",
+      condition: initialValues?.condition ?? "",
+    };
+>>>>>>> f18247c (增加CART)
   });
   const [files, setFiles] = useState<File[]>([]);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fileError, setFileError] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
+<<<<<<< HEAD
   const inputRef = useRef<HTMLInputElement>(null);
+=======
+>>>>>>> f18247c (增加CART)
   const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -80,6 +138,7 @@ export function SecondOpinionForm({
     setErrors((e) => ({ ...e, [name]: "" }));
   };
 
+<<<<<<< HEAD
   // Only the "国际二诊" (second-opinion) need type collects medical attachments.
   // It is optional — the client may upload later when the admin requests it.
   const isSecondOpinion = values.needType === f.needTypeOptions[0];
@@ -108,6 +167,41 @@ export function SecondOpinionForm({
   const validate = () => {
     const e: Record<string, string> = {};
     const req: (keyof Values)[] = ["fullName", "email", "phone", "country", "needType", "condition"];
+=======
+  // Only the "国际二诊服务" (second-opinion) and "CAR-T" service categories collect medical attachments.
+  // It is optional — the client may upload later when the admin requests it.
+  const isSecondOpinion = values.serviceCategory === f.serviceCategoryOptions[0] || 
+                          values.serviceCategory === "Second Opinion Service" ||
+                          values.serviceCategory === "CAR-T";
+
+  // Show destination field only for "跨境国际医疗"
+  const showDestination =
+    values.serviceCategory === f.serviceCategoryOptions[4] ||
+    values.serviceCategory === "Cross-border Medical";
+
+  // Get need type options based on service category
+  const getNeedTypeOptions = (category?: string) => {
+    const cat = category ?? values.serviceCategory;
+    const categoryMap: Record<string, string[]> = {
+      "国际二诊服务": ["国际二诊"],
+      "CAR-T": ["CAR-T"],
+      "私人医生": ["健康档案建立", "体检套餐定制", "检测定制", "报告解读", "线上咨询", "多学科会诊", "慢病配药"],
+      "基础医疗": ["医疗预约", "绿色就医通道", "住院 VIP 协调", "私人陪诊", "礼宾车服务", "24 小时就医协助", "智能穿戴监测"],
+      "跨境国际医疗": ["医疗档案建立", "报告翻译", "全球找药", "多学科诊疗", "境外诊疗推荐", "入境诊疗推荐", "辅助生殖协调", "精密体检"],
+      "长寿医学": ["医疗档案建立", "精准检测", "细胞焕活方案", "静脉输注", "营养素套餐", "体重管理", "中医辩证", "菌群移植", "运动康复", "心理健康", "血液净化", "氧舱疗法", "营养方案"],
+      "Second Opinion Service": ["Second Opinion"],
+      "Private Doctor": ["Health Record", "Screening Design", "Lab Tests", "Report Interpretation", "Online Consultation", "MDT Consultation", "Medication Service"],
+      "Basic Medical": ["Outpatient Access", "VIP Green Channel", "Inpatient VIP", "Medical Chaperone", "Limousine Service", "24-hour Assistance", "Smart Monitoring"],
+      "Cross-border Medical": ["Medical Record", "Report Translation", "Global Medicine", "MDT Service", "Overseas Recommendation", "China Medical Plan", "IVF Coordination", "Precision Screening"],
+      "Longevity Medical": ["Medical Record", "Precision Testing", "Cellular Rejuvenation", "IV Health", "Nutritional Package", "Weight Management", "TCM", "Flora Transplant", "Exercise Rehab", "Psychological Health", "Blood Purification", "Hyperbaric Oxygen", "Dietitian Plan"],
+    };
+    return categoryMap[cat] || f.needTypeOptions;
+  };
+
+  const validate = () => {
+    const e: Record<string, string> = {};
+    const req: (keyof Values)[] = ["fullName", "email", "phone", "country", "serviceCategory", "needType", "condition"];
+>>>>>>> f18247c (增加CART)
     for (const k of req) if (!values[k].trim()) e[k] = c.required;
     if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) e.email = c.invalidEmail;
     if (!hideAgree && !agree) e.__agree = c.agreeError;
@@ -122,7 +216,18 @@ export function SecondOpinionForm({
 
     const fd = new FormData();
     fd.append("lang", lang);
+<<<<<<< HEAD
     (Object.keys(values) as (keyof Values)[]).forEach((k) => fd.append(k, values[k]));
+=======
+    fd.append("fullName", values.fullName);
+    fd.append("email", values.email);
+    fd.append("phone", values.phone);
+    fd.append("country", values.country);
+    fd.append("serviceCategory", values.serviceCategory);
+    fd.append("needType", values.needType);
+    fd.append("destination", values.destination);
+    fd.append("condition", values.condition);
+>>>>>>> f18247c (增加CART)
     files.forEach((file) => fd.append("attachments", file));
 
     try {
@@ -131,9 +236,27 @@ export function SecondOpinionForm({
         credentials: "include",
         body: fd,
       });
+<<<<<<< HEAD
       if (!res.ok) throw new Error("submit failed");
       setStatus("done");
     } catch {
+=======
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Submit failed:", res.status, errorData);
+        setFileError(`${a.submitError} (${res.status}: ${JSON.stringify(errorData)})`);
+        setStatus("idle");
+        return;
+      }
+      if (isLoggedIn) {
+        router.push(`/${lang}/account/applications`);
+        router.refresh();
+      } else {
+        setStatus("done");
+      }
+    } catch (err) {
+      console.error("Submit error:", err);
+>>>>>>> f18247c (增加CART)
       setFileError(a.submitError);
       setStatus("idle");
     }
@@ -179,16 +302,44 @@ export function SecondOpinionForm({
           <input id="country" className="field-input" placeholder={ph.country}
             value={values.country} onChange={(e) => set("country", e.target.value)} />
         </Field>
+<<<<<<< HEAD
         <Field id="needType" label={f.needType} required error={errors.needType}>
           <select id="needType" className="field-input"
             value={values.needType} onChange={(e) => set("needType", e.target.value)}>
             {f.needTypeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
         </Field>
+=======
+        <Field id="serviceCategory" label={f.serviceCategory} required error={errors.serviceCategory}>
+          <select id="serviceCategory" className="field-input"
+            value={values.serviceCategory} onChange={(e) => {
+              const newCat = e.target.value;
+              set("serviceCategory", newCat);
+              set("needType", getNeedTypeOptions(newCat)[0]);
+              const needsDest =
+                newCat === f.serviceCategoryOptions[4] ||
+                newCat === "Cross-border Medical";
+              if (!needsDest) set("destination", "");
+            }}>
+            {f.serviceCategoryOptions.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </Field>
+        <Field id="needType" label={f.needType} required error={errors.needType}>
+          <select id="needType" className="field-input"
+            value={values.needType} onChange={(e) => set("needType", e.target.value)}>
+            {getNeedTypeOptions().map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </Field>
+        {showDestination && (
+>>>>>>> f18247c (增加CART)
         <Field id="destination" label={f.destination} error={errors.destination}>
           <input id="destination" className="field-input" placeholder={ph.destination}
             value={values.destination} onChange={(e) => set("destination", e.target.value)} />
         </Field>
+<<<<<<< HEAD
+=======
+        )}
+>>>>>>> f18247c (增加CART)
         <div className="sm:col-span-2">
           <Field id="condition" label={f.condition} required error={errors.condition}>
             <textarea id="condition" rows={4} className="field-input resize-none" placeholder={ph.condition}
@@ -201,6 +352,7 @@ export function SecondOpinionForm({
       {isSecondOpinion && (
       <div className="mt-6">
         <label className="field-label">{a.uploadLabel}</label>
+<<<<<<< HEAD
         <div
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => e.preventDefault()}
@@ -233,6 +385,22 @@ export function SecondOpinionForm({
         ) : (
           <p className="mt-2 text-xs text-slate-400">{a.uploadEmpty}</p>
         )}
+=======
+        <FileDropzone
+          files={files}
+          onChange={setFiles}
+          accept="application/pdf,image/png,image/jpeg,image/webp,image/heic,image/heif"
+          labels={{
+            cta: a.uploadCta,
+            hint: a.uploadHint,
+            empty: a.uploadEmpty,
+            remove: a.remove,
+            fileTooLarge: a.fileTooLarge,
+            fileTypeError: a.fileTypeError,
+          }}
+        />
+        {fileError && <p className="mt-2 text-xs text-red-500">{fileError}</p>}
+>>>>>>> f18247c (增加CART)
       </div>
       )}
 
@@ -242,7 +410,28 @@ export function SecondOpinionForm({
             <input type="checkbox" checked={agree}
               onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
               className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
+<<<<<<< HEAD
             <span className="text-sm text-slate-600">{t.consent}</span>
+=======
+            <span className="text-sm text-slate-600">
+              {(() => {
+                const text = t.consent;
+                const match = text.match(/^(.*?)《[^》]+》(.*)$/);
+                if (match) {
+                  return (
+                    <>
+                      {match[1]}
+                      <Link href={`/${lang}/disclaimer`} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-deep hover:underline">
+                        《{t.disclaimerLink}》
+                      </Link>
+                      {match[2]}
+                    </>
+                  );
+                }
+                return text;
+              })()}
+            </span>
+>>>>>>> f18247c (增加CART)
           </label>
           {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
         </div>
