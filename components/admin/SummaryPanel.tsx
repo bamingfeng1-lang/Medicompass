@@ -29,17 +29,6 @@ export function SummaryPanel({ id, dict, initialSummary, initialStatus, initialE
         method: "POST",
         credentials: "include",
       });
-<<<<<<< HEAD
-      const data = await res.json();
-      setSummary(data.aiSummary ?? null);
-      setStatus(data.aiSummaryStatus ?? "failed");
-      setError(data.aiSummaryError ?? null);
-      router.refresh();
-    } catch {
-      setStatus("failed");
-      setError(a.aiFailed);
-    } finally {
-=======
       
       if (!res.ok) {
         throw new Error("Failed to start AI summarization");
@@ -85,7 +74,6 @@ export function SummaryPanel({ id, dict, initialSummary, initialStatus, initialE
     } catch {
       setStatus("failed");
       setError(a.aiFailed);
->>>>>>> f18247c (增加CART)
       setRunning(false);
     }
   };

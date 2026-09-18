@@ -16,14 +16,6 @@ import { Reveal } from "@/components/Reveal";
 import { LogoMark } from "@/components/Logo";
 import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
-<<<<<<< HEAD
-import { notFound } from "next/navigation";
-
-const painIcons = [Sparkles, Stethoscope, ShieldCheck];
-const whyIcons = [Globe2, Languages, BadgeCheck, HeartHandshake];
-
-export default function HomePage({ params }: { params: { lang: string } }) {
-=======
 import { getCurrentUser } from "@/lib/api";
 import { notFound } from "next/navigation";
 
@@ -33,18 +25,14 @@ const painIcons = [Sparkles, Stethoscope, ShieldCheck];
 const whyIcons = [Globe2, Languages, BadgeCheck, HeartHandshake];
 
 export default async function HomePage({ params }: { params: { lang: string } }) {
->>>>>>> f18247c (增加CART)
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
   const p = (path: string) => `/${lang}${path}`;
-<<<<<<< HEAD
-=======
   const user = await getCurrentUser();
   const heroTitleClass = lang === "zh" 
     ? "mt-6 text-4xl font-bold leading-[1.1] tracking-tight text-brand-950 sm:text-5xl lg:text-6xl"
     : "mt-6 text-3xl font-bold leading-[1.1] tracking-tight text-brand-950 sm:text-4xl lg:text-5xl";
->>>>>>> f18247c (增加CART)
 
   return (
     <>
@@ -55,11 +43,7 @@ export default async function HomePage({ params }: { params: { lang: string } })
         <div className="container-page relative grid gap-12 py-20 sm:py-28 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="animate-fade-up">
             <Eyebrow>{t.home.heroBadge}</Eyebrow>
-<<<<<<< HEAD
-            <h1 className="mt-6 text-4xl font-bold leading-[1.1] tracking-tight text-brand-950 sm:text-5xl lg:text-6xl">
-=======
             <h1 className={heroTitleClass}>
->>>>>>> f18247c (增加CART)
               {t.home.heroTitle}
               <span className="text-gradient">{t.home.heroTitleAccent}</span>
             </h1>
@@ -71,17 +55,11 @@ export default async function HomePage({ params }: { params: { lang: string } })
                 {t.home.heroCtaPrimary}
                 <ArrowRight className="h-4 w-4" />
               </Link>
-<<<<<<< HEAD
-              <Link href={p("/register/provider")} className="btn-secondary">
-                {t.home.heroCtaSecondary}
-              </Link>
-=======
               {!user && (
                 <Link href={p("/register/provider")} className="btn-secondary">
                   {t.home.heroCtaSecondary}
                 </Link>
               )}
->>>>>>> f18247c (增加CART)
             </div>
 
             <dl className="mt-14 grid grid-cols-2 gap-6 sm:grid-cols-4">

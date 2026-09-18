@@ -44,10 +44,7 @@ export default async function AssignedApplicationDetailPage({
   const isEnquiry = !!app.serviceSlug;
 
   const rows: [string, string][] = [
-<<<<<<< HEAD
-=======
     [lang === "zh" ? "申请编号" : "Application No.", app.applicationNo || "—"],
->>>>>>> f18247c (增加CART)
     [f.fullName, app.fullName],
     [f.email, app.email || "—"],
     [f.phone, app.phone],
@@ -96,8 +93,6 @@ export default async function AssignedApplicationDetailPage({
           </dl>
         </div>
 
-<<<<<<< HEAD
-=======
         {/* CAR-T specific info */}
         {(app.hospital || app.expertDoctor || app.arrivalDatetime || app.flightNumber || app.consultationDatetime) && (
           <div className="card mt-6">
@@ -137,7 +132,6 @@ export default async function AssignedApplicationDetailPage({
           </div>
         )}
 
->>>>>>> f18247c (增加CART)
         {/* Condition (second-opinion) */}
         {app.condition && (
           <div className="card mt-6">

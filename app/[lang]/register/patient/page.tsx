@@ -27,13 +27,6 @@ export default function PatientRegister({
     { name: "fullName", label: f.fullName, type: "text", placeholder: ph.fullName, required: true, half: true },
     { name: "email", label: f.email, type: "email", placeholder: ph.email, required: true, half: true },
     { name: "phone", label: f.phone, type: "tel", placeholder: ph.phone, required: true, half: true },
-<<<<<<< HEAD
-    { name: "country", label: f.country, type: "text", placeholder: ph.country, required: true, half: true },
-    { name: "needType", label: f.needType, type: "select", options: f.needTypeOptions, required: true, half: true },
-    { name: "destination", label: f.destination, type: "text", placeholder: ph.destination, half: true },
-    { name: "condition", label: f.condition, type: "textarea", placeholder: ph.condition, required: true },
-=======
->>>>>>> f18247c (增加CART)
   ];
 
   const initialPhone = searchParams?.phone ? decodeURIComponent(searchParams.phone) : undefined;

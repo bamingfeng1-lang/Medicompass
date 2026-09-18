@@ -1,54 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-<<<<<<< HEAD
-import { CheckCircle2, Upload, X, FileText } from "lucide-react";
-=======
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
->>>>>>> f18247c (增加CART)
 import Link from "next/link";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
 import { clientApi } from "@/lib/api";
-<<<<<<< HEAD
-
-const MAX_FILE_BYTES = 15 * 1024 * 1024;
-const ALLOWED = [
-  "application/pdf",
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-];
-=======
 import { FileDropzone } from "@/components/FileDropzone";
->>>>>>> f18247c (增加CART)
 
 type Values = {
   fullName: string;
   email: string;
   phone: string;
   country: string;
-<<<<<<< HEAD
-=======
   serviceCategory: string;
->>>>>>> f18247c (增加CART)
   needType: string;
   destination: string;
   condition: string;
 };
 
-<<<<<<< HEAD
-function fmtSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
-
-=======
->>>>>>> f18247c (增加CART)
 export function SecondOpinionForm({
   lang,
   dict,
@@ -67,17 +38,6 @@ export function SecondOpinionForm({
   const a = dict.apply;
   const f = t.fields;
   const ph = t.placeholders;
-<<<<<<< HEAD
-
-  const [values, setValues] = useState<Values>({
-    fullName: initialValues?.fullName ?? "",
-    email: initialValues?.email ?? "",
-    phone: initialValues?.phone ?? "",
-    country: initialValues?.country ?? "",
-    needType: initialValues?.needType ?? f.needTypeOptions[0],
-    destination: initialValues?.destination ?? "",
-    condition: initialValues?.condition ?? "",
-=======
   const router = useRouter();
 
   const [values, setValues] = useState<Values>(() => {
@@ -114,17 +74,12 @@ export function SecondOpinionForm({
       destination: initialValues?.destination ?? "",
       condition: initialValues?.condition ?? "",
     };
->>>>>>> f18247c (增加CART)
   });
   const [files, setFiles] = useState<File[]>([]);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fileError, setFileError] = useState("");
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
-<<<<<<< HEAD
-  const inputRef = useRef<HTMLInputElement>(null);
-=======
->>>>>>> f18247c (增加CART)
   const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -138,36 +93,6 @@ export function SecondOpinionForm({
     setErrors((e) => ({ ...e, [name]: "" }));
   };
 
-<<<<<<< HEAD
-  // Only the "国际二诊" (second-opinion) need type collects medical attachments.
-  // It is optional — the client may upload later when the admin requests it.
-  const isSecondOpinion = values.needType === f.needTypeOptions[0];
-
-  const addFiles = (list: FileList | null) => {
-    if (!list) return;
-    setFileError("");
-    const next: File[] = [...files];
-    for (const file of Array.from(list)) {
-      if (file.size > MAX_FILE_BYTES) {
-        setFileError(`${a.fileTooLarge}${file.name}`);
-        continue;
-      }
-      if (!ALLOWED.includes(file.type)) {
-        setFileError(`${a.fileTypeError}${file.name}`);
-        continue;
-      }
-      if (!next.some((x) => x.name === file.name && x.size === file.size)) next.push(file);
-    }
-    setFiles(next);
-    if (inputRef.current) inputRef.current.value = "";
-  };
-
-  const removeFile = (i: number) => setFiles((s) => s.filter((_, idx) => idx !== i));
-
-  const validate = () => {
-    const e: Record<string, string> = {};
-    const req: (keyof Values)[] = ["fullName", "email", "phone", "country", "needType", "condition"];
-=======
   // Only the "国际二诊服务" (second-opinion) and "CAR-T" service categories collect medical attachments.
   // It is optional — the client may upload later when the admin requests it.
   const isSecondOpinion = values.serviceCategory === f.serviceCategoryOptions[0] || 
@@ -201,7 +126,6 @@ export function SecondOpinionForm({
   const validate = () => {
     const e: Record<string, string> = {};
     const req: (keyof Values)[] = ["fullName", "email", "phone", "country", "serviceCategory", "needType", "condition"];
->>>>>>> f18247c (增加CART)
     for (const k of req) if (!values[k].trim()) e[k] = c.required;
     if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) e.email = c.invalidEmail;
     if (!hideAgree && !agree) e.__agree = c.agreeError;
@@ -216,9 +140,6 @@ export function SecondOpinionForm({
 
     const fd = new FormData();
     fd.append("lang", lang);
-<<<<<<< HEAD
-    (Object.keys(values) as (keyof Values)[]).forEach((k) => fd.append(k, values[k]));
-=======
     fd.append("fullName", values.fullName);
     fd.append("email", values.email);
     fd.append("phone", values.phone);
@@ -227,7 +148,6 @@ export function SecondOpinionForm({
     fd.append("needType", values.needType);
     fd.append("destination", values.destination);
     fd.append("condition", values.condition);
->>>>>>> f18247c (增加CART)
     files.forEach((file) => fd.append("attachments", file));
 
     try {
@@ -236,11 +156,6 @@ export function SecondOpinionForm({
         credentials: "include",
         body: fd,
       });
-<<<<<<< HEAD
-      if (!res.ok) throw new Error("submit failed");
-      setStatus("done");
-    } catch {
-=======
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         console.error("Submit failed:", res.status, errorData);
@@ -256,7 +171,6 @@ export function SecondOpinionForm({
       }
     } catch (err) {
       console.error("Submit error:", err);
->>>>>>> f18247c (增加CART)
       setFileError(a.submitError);
       setStatus("idle");
     }
@@ -302,14 +216,6 @@ export function SecondOpinionForm({
           <input id="country" className="field-input" placeholder={ph.country}
             value={values.country} onChange={(e) => set("country", e.target.value)} />
         </Field>
-<<<<<<< HEAD
-        <Field id="needType" label={f.needType} required error={errors.needType}>
-          <select id="needType" className="field-input"
-            value={values.needType} onChange={(e) => set("needType", e.target.value)}>
-            {f.needTypeOptions.map((o) => <option key={o} value={o}>{o}</option>)}
-          </select>
-        </Field>
-=======
         <Field id="serviceCategory" label={f.serviceCategory} required error={errors.serviceCategory}>
           <select id="serviceCategory" className="field-input"
             value={values.serviceCategory} onChange={(e) => {
@@ -331,15 +237,11 @@ export function SecondOpinionForm({
           </select>
         </Field>
         {showDestination && (
->>>>>>> f18247c (增加CART)
         <Field id="destination" label={f.destination} error={errors.destination}>
           <input id="destination" className="field-input" placeholder={ph.destination}
             value={values.destination} onChange={(e) => set("destination", e.target.value)} />
         </Field>
-<<<<<<< HEAD
-=======
         )}
->>>>>>> f18247c (增加CART)
         <div className="sm:col-span-2">
           <Field id="condition" label={f.condition} required error={errors.condition}>
             <textarea id="condition" rows={4} className="field-input resize-none" placeholder={ph.condition}
@@ -352,40 +254,6 @@ export function SecondOpinionForm({
       {isSecondOpinion && (
       <div className="mt-6">
         <label className="field-label">{a.uploadLabel}</label>
-<<<<<<< HEAD
-        <div
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => { e.preventDefault(); addFiles(e.dataTransfer.files); }}
-          className="mt-1 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-brand-200 bg-brand-50/40 px-6 py-8 text-center transition hover:border-brand-deep hover:bg-brand-50"
-        >
-          <Upload className="h-7 w-7 text-brand-deep" />
-          <p className="mt-2 text-sm font-medium text-brand-deep">{a.uploadCta}</p>
-          <p className="mt-1 text-xs text-slate-500">{a.uploadHint}</p>
-          <input ref={inputRef} type="file" multiple accept={ALLOWED.join(",")}
-            className="hidden" onChange={(e) => addFiles(e.target.files)} />
-        </div>
-        {fileError && <p className="mt-2 text-xs text-red-500">{fileError}</p>}
-
-        {files.length > 0 ? (
-          <ul className="mt-3 space-y-2">
-            {files.map((file, i) => (
-              <li key={`${file.name}-${i}`} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                <FileText className="h-4 w-4 shrink-0 text-brand-deep" />
-                <span className="flex-1 truncate text-sm text-slate-700">{file.name}</span>
-                <span className="text-xs text-slate-400">{fmtSize(file.size)}</span>
-                <button type="button" onClick={() => removeFile(i)}
-                  className="rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-red-500"
-                  aria-label={a.remove}>
-                  <X className="h-4 w-4" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="mt-2 text-xs text-slate-400">{a.uploadEmpty}</p>
-        )}
-=======
         <FileDropzone
           files={files}
           onChange={setFiles}
@@ -400,7 +268,6 @@ export function SecondOpinionForm({
           }}
         />
         {fileError && <p className="mt-2 text-xs text-red-500">{fileError}</p>}
->>>>>>> f18247c (增加CART)
       </div>
       )}
 
@@ -410,9 +277,6 @@ export function SecondOpinionForm({
             <input type="checkbox" checked={agree}
               onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
               className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
-<<<<<<< HEAD
-            <span className="text-sm text-slate-600">{t.consent}</span>
-=======
             <span className="text-sm text-slate-600">
               {(() => {
                 const text = t.consent;
@@ -431,7 +295,6 @@ export function SecondOpinionForm({
                 return text;
               })()}
             </span>
->>>>>>> f18247c (增加CART)
           </label>
           {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
         </div>

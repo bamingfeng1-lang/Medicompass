@@ -42,10 +42,7 @@ export default async function MyApplicationDetailPage({
   const isEnquiry = !!app.serviceSlug;
 
   const rows: [string, string][] = [
-<<<<<<< HEAD
-=======
     [lang === "zh" ? "申请编号" : "Application No.", app.applicationNo || "—"],
->>>>>>> f18247c (增加CART)
     [f.fullName, app.fullName],
     [f.email, app.email || "—"],
     [f.phone, app.phone],
@@ -63,11 +60,7 @@ export default async function MyApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           {ac.backList}
         </Link>
-<<<<<<< HEAD
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-brand-950">{app.needType}</h1>
-=======
         <h1 className="mt-4 text-3xl font-bold tracking-tight text-brand-950">{app.applicationNo || app.needType}</h1>
->>>>>>> f18247c (增加CART)
         <div className="mt-3">
           <StatusBadge status={app.status} dict={t} />
         </div>
@@ -77,15 +70,9 @@ export default async function MyApplicationDetailPage({
           <SupplementForm app={app} dict={t} />
         )}
 
-<<<<<<< HEAD
-        {/* Contact info */}
-        <div className="card mt-8">
-          <h2 className="text-lg font-semibold text-brand-950">{ac.contactInfo}</h2>
-=======
         {/* Application info */}
         <div className="card mt-8">
           <h2 className="text-lg font-semibold text-brand-950">{ac.applicationInfo}</h2>
->>>>>>> f18247c (增加CART)
           <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
             {rows.map(([k, v]) => (
               <div key={k} className="flex flex-col">
@@ -96,8 +83,6 @@ export default async function MyApplicationDetailPage({
           </dl>
         </div>
 
-<<<<<<< HEAD
-=======
         {/* CAR-T specific info */}
         {(app.hospital || app.expertDoctor || app.arrivalDatetime || app.flightNumber || app.consultationDatetime) && (
           <div className="card mt-6">
@@ -137,7 +122,6 @@ export default async function MyApplicationDetailPage({
           </div>
         )}
 
->>>>>>> f18247c (增加CART)
         {/* Condition (second-opinion) */}
         {app.condition && (
           <div className="card mt-6">
@@ -154,23 +138,6 @@ export default async function MyApplicationDetailPage({
           </div>
         )}
 
-<<<<<<< HEAD
-        {/* Attachments — second-opinion only */}
-        {!isEnquiry && (
-          <div className="card mt-6">
-            <h2 className="text-lg font-semibold text-brand-950">{ac.attachments}</h2>
-            {app.attachments.length === 0 ? (
-              <p className="mt-3 text-sm text-slate-400">{ac.noAttachments}</p>
-            ) : (
-              <AttachmentGallery
-                attachments={app.attachments}
-                urlPrefix={`${CLIENT_API_BASE}/api/auth/attachments`}
-                downloadLabel={ac.download}
-              />
-            )}
-          </div>
-        )}
-=======
         {/* Attachments — second-opinion only (client uploaded) */}
         {!isEnquiry && (
           <div className="card mt-6">
@@ -206,7 +173,6 @@ export default async function MyApplicationDetailPage({
             </div>
           );
         })()}
->>>>>>> f18247c (增加CART)
 
         {/* Final report — only after delivered */}
         {!isEnquiry && app.status === "COMPLETED" && app.finalBilingualReportUrl && (

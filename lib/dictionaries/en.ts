@@ -8,10 +8,6 @@ export const en: Dictionary = {
     home: "Home",
     packages: "Packages",
     secondOpinion: "Medicaltrip to China",
-<<<<<<< HEAD
-    services: "Health Services",
-    overseasDomestic: "Overseas Care Landing",
-=======
     carT: "CAR-T",
     services: "Health Services",
     overseasDomestic: "Overseas Care Landing",
@@ -19,17 +15,12 @@ export const en: Dictionary = {
     basicMedical: "Basic Medical",
     crossBorderMedical: "Cross-border Medical",
     longevityMedical: "Longevity Medical",
->>>>>>> f18247c (增加CART)
     about: "About",
     register: "Register",
     registerPatient: "Patient Sign-up",
     registerProvider: "Provider Sign-up",
     registerDoctor: "Doctor Sign-up",
-<<<<<<< HEAD
-    cta: "Start Your Medical Trip",
-=======
     cta: "Service Request",
->>>>>>> f18247c (增加CART)
     login: "Sign In",
     logout: "Sign Out",
     myApplications: "My Applications",
@@ -67,11 +58,7 @@ export const en: Dictionary = {
   },
   apply: {
     title: "Book an International Second Opinion",
-<<<<<<< HEAD
-    desc: "Share your condition details and upload relevant medical records — our advisors and expert panel will review them shortly.",
-=======
     desc: "Select the service type you need — our advisors and expert panel will review them shortly.",
->>>>>>> f18247c (增加CART)
     back: "Back to Second Opinion",
     uploadLabel: "Upload medical records",
     uploadHint: "PDF, JPG, PNG, WebP supported; max 15MB per file. Reports, imaging, diagnoses, etc.",
@@ -112,12 +99,9 @@ export const en: Dictionary = {
     contactInfo: "Contact info",
     conditionInfo: "Condition summary",
     attachments: "Attachments",
-<<<<<<< HEAD
-=======
     clientAttachments: "Client Uploaded Attachments",
     emailAttachments: "Email Attachments",
     otherAttachments: "Other Attachments",
->>>>>>> f18247c (增加CART)
     noAttachments: "No attachments.",
     download: "Download",
     aiSummary: "AI Summary",
@@ -135,15 +119,10 @@ export const en: Dictionary = {
     statusSaving: "Updating…",
     statusSaved: "Status updated",
     statusSaveError: "Update failed, please try again.",
-<<<<<<< HEAD
-    supremeTitle: "Admin Edit (Full Access)",
-    supremeHint: "Edit any application field / processing product, and upload attachments. Use this to complete the flow yourself when no provider/doctor is available yet.",
-=======
     supremeTitle: "Application Info",
     supremeHint: "View and edit application fields and processing products, and upload attachments.",
     supremeEdit: "Edit",
     supremeCancel: "Cancel",
->>>>>>> f18247c (增加CART)
     supremeSave: "Save changes",
     supremeSaving: "Saving…",
     supremeSaved: "Saved.",
@@ -188,8 +167,6 @@ export const en: Dictionary = {
     eventAssigned: "Assigned",
     eventUnassigned: "Unassigned",
     eventNoteAdded: "Note added",
-<<<<<<< HEAD
-=======
     eventEmailSent: "Email sent",
     eventCommLogged: "Communication logged",
   },
@@ -242,7 +219,6 @@ export const en: Dictionary = {
     status_sent: "Sent",
     status_failed: "Failed",
     status_disabled: "Disabled",
->>>>>>> f18247c (增加CART)
   },
   adminFinalize: {
     title: "Final QC",
@@ -273,10 +249,7 @@ export const en: Dictionary = {
     detailOverview: "Overview",
     detailHighlights: "What's included",
     detailAudience: "Who it's for",
-<<<<<<< HEAD
-=======
     enquire: { title: "Appointment", desc: "Fill in your details and choose your need type — our advisor will contact you soon with the right service options.", back: "Back to Home" },
->>>>>>> f18247c (增加CART)
     inquiry: {
       title: "Leave your details, we'll contact you",
       desc: "Fill in the form below and our advisor will reach out shortly to walk you through this service.",
@@ -289,12 +262,8 @@ export const en: Dictionary = {
       phonePh: "Your phone number",
       emailPh: "name@example.com (optional)",
       messagePh: "Briefly describe your needs if any (optional)",
-<<<<<<< HEAD
-      consent: "I have read and agree to the Terms of Service and Privacy Policy.",
-=======
       consent: "I have read and agree to the 《Disclaimer》.",
       disclaimerLink: "Disclaimer",
->>>>>>> f18247c (增加CART)
       submit: "Submit & contact me",
       submitting: "Submitting…",
       successTitle: "Submitted!",
@@ -322,13 +291,8 @@ export const en: Dictionary = {
   },
   home: {
     heroBadge: "AI-Powered · Global Cross-Border Medical Travel",
-<<<<<<< HEAD
-    heroTitle: "World-class care, ",
-    heroTitleAccent: "within reach",
-=======
     heroTitle: "Bringing World-Class Healthcare ",
     heroTitleAccent: "Within Reach",
->>>>>>> f18247c (增加CART)
     heroSubtitle:
       "Building the world's leading cross-border medical travel platform. We use AI to break down medical information barriers and deliver reliable, cost-effective, and timely healthcare and wellness journeys.",
     heroCtaPrimary: "Book a Second Opinion",
@@ -514,8 +478,6 @@ export const en: Dictionary = {
       disclaimer: "This program description is for reference only. Coverage, exclusions, service scope and fees are subject to the official insurance contract and service agreement.",
     },
   },
-<<<<<<< HEAD
-=======
   carT: {
     hero: {
       badge: "Cutting-edge Cell Therapy · Medical Trip to China",
@@ -560,7 +522,6 @@ export const en: Dictionary = {
     ctaTitle: "Start CAR-T Treatment Consultation",
     ctaDesc: "Wherever you are, Medicompass can connect you with China's top CAR-T treatment resources.",
   },
->>>>>>> f18247c (增加CART)
   about: {
     badge: "About Medicompass",
     title: "Making world-class care accessible",
@@ -589,12 +550,8 @@ export const en: Dictionary = {
       provider: { title: "Provider Sign-up", desc: "Hospitals, clinics, agencies and service providers — join our quality supply network.", cta: "Register as Provider" },
       doctor: { title: "Doctor Sign-up", desc: "Leading experts join to provide second opinions and clinical advice to patients worldwide.", cta: "Register as Doctor" },
     },
-<<<<<<< HEAD
-    consent: "I have read and agree to the Terms of Service and Privacy Policy.",
-=======
     consent: "I have read and agree to the 《Disclaimer》.",
     disclaimerLink: "Disclaimer",
->>>>>>> f18247c (增加CART)
     fields: {
       fullName: "Full Name",
       email: "Email",
@@ -602,13 +559,9 @@ export const en: Dictionary = {
       country: "Country / Region",
       message: "Additional Notes",
       needType: "Type of Need",
-<<<<<<< HEAD
-      needTypeOptions: ["Second Opinion", "Overseas Treatment", "Health Check-up", "Medical Wellness", "Surgery in China"],
-=======
       needTypeOptions: ["Second Opinion", "CAR-T", "Overseas Treatment", "Health Check-up", "Medical Wellness", "Surgery in China"],
       serviceCategory: "Service Category",
       serviceCategoryOptions: ["Second Opinion Service", "CAR-T", "Private Doctor", "Basic Medical", "Cross-border Medical", "Longevity Medical"],
->>>>>>> f18247c (增加CART)
       condition: "Condition Summary",
       destination: "Preferred Destination",
       orgName: "Organization Name",
@@ -643,11 +596,7 @@ export const en: Dictionary = {
       message: "Anything else you'd like to add (optional)",
     },
     patientTitle: "Patient Sign-up",
-<<<<<<< HEAD
-    patientDesc: "Fill in the details below and a medical advisor will contact you within 2 working days.",
-=======
     patientDesc: "Just set up your account — any medical applications you have already submitted will be linked to your account automatically.",
->>>>>>> f18247c (增加CART)
     providerTitle: "Provider Sign-up",
     providerDesc: "Provide your organization details; we'll assess and begin credential review.",
     doctorTitle: "Doctor Sign-up",
@@ -703,18 +652,11 @@ export const en: Dictionary = {
     colTime: "Submitted",
     view: "View details",
     backList: "Back to My Applications",
-<<<<<<< HEAD
-    contactInfo: "Contact Information",
-    conditionInfo: "Condition Summary",
-    message: "Message",
-    attachments: "Uploaded Medical Records",
-=======
     applicationInfo: "Application Info",
     conditionInfo: "Condition Summary",
     message: "Message",
     attachments: "Uploaded Medical Records",
     otherAttachments: "Other Attachments",
->>>>>>> f18247c (增加CART)
     noAttachments: "No attachments",
     download: "Download",
     colStatus: "Status",
@@ -894,11 +836,7 @@ export const en: Dictionary = {
     reviewNote: "Review note",
   },
   footer: {
-<<<<<<< HEAD
-    tagline: "World-class care, within reach",
-=======
     tagline: "Bringing World-Class Healthcare Within Reach",
->>>>>>> f18247c (增加CART)
     quickLinks: "Quick Links",
     services: "Services",
     contact: "Contact",

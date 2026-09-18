@@ -49,10 +49,7 @@ export default async function ApplyLoggedInPage({ params }: { params: { lang: st
             lang={lang}
             dict={t}
             hideAgree
-<<<<<<< HEAD
-=======
             isLoggedIn
->>>>>>> f18247c (增加CART)
             initialValues={{
               fullName: profile.fullName,
               email: profile.email,

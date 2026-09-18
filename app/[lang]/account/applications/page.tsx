@@ -43,11 +43,7 @@ export default async function MyApplicationsPage({ params }: { params: { lang: s
           <ClipboardList className="mx-auto h-12 w-12 text-slate-300" />
           <p className="mt-4 text-slate-500">{ac.listEmpty}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-<<<<<<< HEAD
-            <Link href={p("/second-opinion/apply-logged-in")} className="btn-primary">
-=======
             <Link href={p("/second-opinion/apply")} className="btn-primary">
->>>>>>> f18247c (增加CART)
               {ac.ctaSecondOpinion}
             </Link>
             <Link href={p("/packages")} className="btn-secondary">
@@ -61,13 +57,8 @@ export default async function MyApplicationsPage({ params }: { params: { lang: s
             <table className="w-full text-left text-sm">
               <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-<<<<<<< HEAD
-                  <th className="px-5 py-3 font-medium">{ac.colNeed}</th>
-                  <th className="px-5 py-3 font-medium">{ac.colService}</th>
-=======
                   <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
                   <th className="px-5 py-3 font-medium">{ac.colNeed}</th>
->>>>>>> f18247c (增加CART)
                   <th className="px-5 py-3 font-medium">{ac.colCountry}</th>
                   <th className="px-5 py-3 font-medium">{ac.colStatus}</th>
                   <th className="px-5 py-3 font-medium">{ac.colTime}</th>
@@ -77,17 +68,12 @@ export default async function MyApplicationsPage({ params }: { params: { lang: s
               <tbody className="divide-y divide-slate-100">
                 {apps.map((app) => (
                   <tr key={app.id} className="transition hover:bg-slate-50/60">
-<<<<<<< HEAD
-                    <td className="px-5 py-3 font-medium text-brand-950">{app.needType}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.serviceName || app.message || "—"}</td>
-=======
                     <td className="px-5 py-3">
                       <span className="font-mono text-sm text-brand-deep">
                         {app.applicationNo || "—"}
                       </span>
                     </td>
                     <td className="px-5 py-3 font-medium text-brand-950">{app.needType}</td>
->>>>>>> f18247c (增加CART)
                     <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
                     <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
                     <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>

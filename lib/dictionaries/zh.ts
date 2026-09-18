@@ -6,10 +6,6 @@ export const zh = {
     home: "首页",
     packages: "医疗套餐",
     secondOpinion: "国际二诊",
-<<<<<<< HEAD
-    services: "健康管理服务",
-    overseasDomestic: "海外诊疗国内落地",
-=======
     carT: "CAR-T",
     services: "健康管理服务",
     overseasDomestic: "海外诊疗国内落地",
@@ -17,17 +13,12 @@ export const zh = {
     basicMedical: "基础医疗",
     crossBorderMedical: "跨境国际医疗",
     longevityMedical: "长寿医学",
->>>>>>> f18247c (增加CART)
     about: "关于我们",
     register: "注册",
     registerPatient: "客户注册",
     registerProvider: "供应商注册",
     registerDoctor: "医生注册",
-<<<<<<< HEAD
-    cta: "预约国际二诊",
-=======
     cta: "预约服务",
->>>>>>> f18247c (增加CART)
     login: "登录",
     logout: "退出登录",
     myApplications: "我的申请",
@@ -65,11 +56,7 @@ export const zh = {
   },
   apply: {
     title: "预约国际二诊",
-<<<<<<< HEAD
-    desc: "填写病情信息并上传相关病历资料，我们的医疗顾问与专家团队将尽快为您评估。",
-=======
     desc: "选择您需要的服务类型，我们的医疗顾问与专家团队将尽快为您评估。",
->>>>>>> f18247c (增加CART)
     back: "返回国际二诊",
     uploadLabel: "上传病历资料",
     uploadHint: "支持 PDF、JPG、PNG、WebP，单个文件不超过 15MB。可上传检查报告、影像、诊断证明等。",
@@ -110,12 +97,9 @@ export const zh = {
     contactInfo: "联系信息",
     conditionInfo: "病情简述",
     attachments: "上传附件",
-<<<<<<< HEAD
-=======
     clientAttachments: "客户上传的附件",
     emailAttachments: "邮件附件",
     otherAttachments: "其他附件",
->>>>>>> f18247c (增加CART)
     noAttachments: "无附件。",
     download: "下载",
     aiSummary: "AI 归纳总结",
@@ -133,15 +117,10 @@ export const zh = {
     statusSaving: "更新中…",
     statusSaved: "状态已更新",
     statusSaveError: "更新失败，请重试。",
-<<<<<<< HEAD
-    supremeTitle: "管理员编辑（最高权限）",
-    supremeHint: "可修改申请的全部信息与处理产物，并可上传附件。通常用于供应商/医生尚未就绪时由管理员代为完成全流程。",
-=======
     supremeTitle: "申请信息",
     supremeHint: "查看和编辑申请的全部信息与处理产物，并可上传附件。",
     supremeEdit: "编辑",
     supremeCancel: "取消",
->>>>>>> f18247c (增加CART)
     supremeSave: "保存修改",
     supremeSaving: "保存中…",
     supremeSaved: "已保存。",
@@ -186,8 +165,6 @@ export const zh = {
     eventAssigned: "已分配",
     eventUnassigned: "已取消分配",
     eventNoteAdded: "添加备注",
-<<<<<<< HEAD
-=======
     eventEmailSent: "发送邮件",
     eventCommLogged: "登记沟通",
   },
@@ -240,7 +217,6 @@ export const zh = {
     status_sent: "已发送",
     status_failed: "发送失败",
     status_disabled: "未启用",
->>>>>>> f18247c (增加CART)
   },
   adminFinalize: {
     title: "平台终审",
@@ -271,10 +247,7 @@ export const zh = {
     detailOverview: "服务介绍",
     detailHighlights: "服务内容",
     detailAudience: "适合人群",
-<<<<<<< HEAD
-=======
     enquire: { title: "预约服务", desc: "填写以下信息并选择需求类型，我们的顾问将尽快与您联系，为您介绍合适的服务方案。", back: "返回首页" },
->>>>>>> f18247c (增加CART)
     inquiry: {
       title: "留下您的信息，联系我们",
       desc: "填写以下信息，我们的顾问将尽快与您联系，为您详细介绍该项服务。",
@@ -287,12 +260,8 @@ export const zh = {
       phonePh: "请输入联系电话",
       emailPh: "name@example.com（选填）",
       messagePh: "如有具体需求，请在此简要说明（选填）",
-<<<<<<< HEAD
-      consent: "我已阅读并同意《服务条款》与《隐私政策》。",
-=======
       consent: "我已阅读并同意《免责申明》。",
       disclaimerLink: "免责申明",
->>>>>>> f18247c (增加CART)
       submit: "提交并联系我",
       submitting: "提交中…",
       successTitle: "提交成功！",
@@ -512,8 +481,6 @@ export const zh = {
       disclaimer: "本文件为患者教育用途，不构成法律或医疗保证。如有疑问，请随时与您的主治医师沟通。",
     },
   },
-<<<<<<< HEAD
-=======
   carT: {
     hero: {
       badge: "前沿细胞疗法 · 来华就医",
@@ -558,7 +525,6 @@ export const zh = {
     ctaTitle: "开启 CAR-T 治疗咨询",
     ctaDesc: "无论您身处何地，迈蒂康都能为您链接中国顶尖 CAR-T 治疗资源。",
   },
->>>>>>> f18247c (增加CART)
   about: {
     badge: "关于迈蒂康",
     title: "让全球优质医疗，触手可及",
@@ -587,12 +553,8 @@ export const zh = {
       provider: { title: "供应商注册", desc: "医院、诊所、中介与服务商，加入平台优质供应网络。", cta: "供应商注册" },
       doctor: { title: "医生注册", desc: "权威专家入驻，为全球患者提供二诊与诊疗意见。", cta: "医生注册" },
     },
-<<<<<<< HEAD
-    consent: "我已阅读并同意《服务条款》与《隐私政策》。",
-=======
     consent: "我已阅读并同意《免责申明》。",
     disclaimerLink: "免责申明",
->>>>>>> f18247c (增加CART)
     fields: {
       fullName: "姓名",
       email: "邮箱",
@@ -601,13 +563,9 @@ export const zh = {
       message: "补充说明",
       // patient
       needType: "需求类型",
-<<<<<<< HEAD
-      needTypeOptions: ["国际二诊", "海外就医", "健康体检", "医疗养生", "来华手术"],
-=======
       needTypeOptions: ["国际二诊", "CAR-T", "海外就医", "健康体检", "医疗养生", "来华手术"],
       serviceCategory: "服务类别",
       serviceCategoryOptions: ["国际二诊服务", "CAR-T", "私人医生", "基础医疗", "跨境国际医疗", "长寿医学"],
->>>>>>> f18247c (增加CART)
       condition: "病情简述",
       destination: "期望目的地",
       // provider
@@ -644,11 +602,7 @@ export const zh = {
       message: "如有其他信息，请在此说明（可留空）",
     },
     patientTitle: "客户注册",
-<<<<<<< HEAD
-    patientDesc: "填写以下信息，医疗顾问将在 2 个工作日内与您联系。",
-=======
     patientDesc: "仅需设置账号信息，注册后您已提交的医疗申请将自动关联到您的账号。",
->>>>>>> f18247c (增加CART)
     providerTitle: "供应商注册",
     providerDesc: "填写机构信息，平台将评估并开启资质审核流程。",
     doctorTitle: "医生注册",
@@ -704,18 +658,11 @@ export const zh = {
     colTime: "提交时间",
     view: "查看详情",
     backList: "返回我的申请",
-<<<<<<< HEAD
-    contactInfo: "联系信息",
-    conditionInfo: "病情简述",
-    message: "留言内容",
-    attachments: "上传的病历资料",
-=======
     applicationInfo: "申请信息",
     conditionInfo: "病情简述",
     message: "留言内容",
     attachments: "上传的病历资料",
     otherAttachments: "其他附件",
->>>>>>> f18247c (增加CART)
     noAttachments: "无附件",
     download: "下载",
     colStatus: "当前状态",

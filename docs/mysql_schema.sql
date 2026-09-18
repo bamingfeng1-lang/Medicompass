@@ -25,11 +25,8 @@ DROP TABLE IF EXISTS `application`;
 CREATE TABLE `application` (
   `id`                 BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键(自增)',
   `user_id`            BIGINT UNSIGNED NULL COMMENT '关联 user.id(来源登录用户,可空)',
-<<<<<<< HEAD
-=======
   `patient_id`         BIGINT UNSIGNED NULL COMMENT '关联 registration_patient.id(客户档案,可空)',
   `application_no`     VARCHAR(64)   NULL     UNIQUE COMMENT '申请编号(客户编号+NNN,如PT260914001001)',
->>>>>>> f18247c (增加CART)
   `full_name`          VARCHAR(191)  NOT NULL COMMENT '客户姓名',
   `email`              VARCHAR(191)  NOT NULL COMMENT '邮箱(服务端已校验格式)',
   `phone`              VARCHAR(64)   NOT NULL COMMENT '联系电话',
@@ -67,14 +64,10 @@ CREATE TABLE `application` (
   PRIMARY KEY (`id`),
   KEY `idx_application_created_at` (`created_at`),
   KEY `idx_application_user` (`user_id`),
-<<<<<<< HEAD
-  CONSTRAINT `fk_application_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-=======
   KEY `idx_application_patient` (`patient_id`),
   CONSTRAINT `fk_application_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
     ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_application_patient` FOREIGN KEY (`patient_id`) REFERENCES `registration_patient` (`id`)
->>>>>>> f18247c (增加CART)
     ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
   COMMENT='统一申请/咨询主表(国际二诊 + 服务/套餐咨询,按 need_type 区分)';
@@ -177,10 +170,7 @@ CREATE TABLE `user` (
 DROP TABLE IF EXISTS `registration_patient`;
 CREATE TABLE `registration_patient` (
   `id`           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键(自增)',
-<<<<<<< HEAD
-=======
   `patient_no`   VARCHAR(32)  NULL     UNIQUE COMMENT '客户编号 PT+YYMMDD+NNN',
->>>>>>> f18247c (增加CART)
   `user_id`      BIGINT UNSIGNED NULL COMMENT '关联 user.id(账号)',
   `full_name`    VARCHAR(191) NOT NULL COMMENT '姓名(必填)',
   `email`        VARCHAR(191) NOT NULL COMMENT '邮箱(必填,校验格式)',
@@ -257,8 +247,6 @@ CREATE TABLE `registration_doctor` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
   COMMENT='医生注册(前端当前仅存 localStorage,需后端新增接口)';
 
-<<<<<<< HEAD
-=======
 -- ---------------------------------------------------------------------
 -- 8. communication_log —— 管理员与客户沟通历史
 --    「后台发送邮件」自动写入 email 记录；电话/面谈等由管理员手动登记。
@@ -284,7 +272,6 @@ CREATE TABLE `communication_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
   COMMENT='管理员与客户沟通历史(邮件/电话/面谈等)';
 
->>>>>>> f18247c (增加CART)
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- =====================================================================

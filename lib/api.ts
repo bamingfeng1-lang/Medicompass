@@ -109,10 +109,7 @@ export async function getCurrentUserProfile(): Promise<PatientProfile | null> {
 
 export type MyApplicationListItem = {
   id: number;
-<<<<<<< HEAD
-=======
   applicationNo: string | null;
->>>>>>> f18247c (增加CART)
   fullName: string;
   email: string;
   needType: string;
@@ -130,31 +127,22 @@ export type MyAttachment = {
   originalName: string;
   mimeType: string;
   size: number;
-<<<<<<< HEAD
-=======
   kind: string;
->>>>>>> f18247c (增加CART)
   createdAt: string;
 };
 
 export type MyApplicationDetail = {
   id: number;
   userId: number | null;
-<<<<<<< HEAD
-=======
   patientId: number | null;
   patientNo: string | null;
   applicationNo: string | null;
->>>>>>> f18247c (增加CART)
   fullName: string;
   email: string;
   phone: string;
   country: string | null;
   needType: string;
-<<<<<<< HEAD
-=======
   serviceCategory: string | null;
->>>>>>> f18247c (增加CART)
   serviceSlug: string | null;
   serviceName: string | null;
   destination: string | null;
@@ -184,15 +172,12 @@ export type MyApplicationDetail = {
   translatedAnswer2: string | null;
   translatedAnswer3: string | null;
   finalBilingualReportUrl: string | null;
-<<<<<<< HEAD
-=======
   // CAR-T specific fields
   hospital: string | null;
   expertDoctor: string | null;
   arrivalDatetime: string | null;
   flightNumber: string | null;
   consultationDatetime: string | null;
->>>>>>> f18247c (增加CART)
   createdAt: string;
   attachments: MyAttachment[];
 };

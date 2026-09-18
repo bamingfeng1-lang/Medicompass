@@ -9,14 +9,11 @@ import { EventTimeline } from "@/components/admin/EventTimeline";
 import { AttachmentGallery } from "@/components/AttachmentGallery";
 import { FinalReviewPanel } from "@/components/admin/FinalReviewPanel";
 import { SupremeEditPanel } from "@/components/admin/SupremeEditPanel";
-<<<<<<< HEAD
-=======
 import { SendEmailPanel } from "@/components/admin/SendEmailPanel";
 import {
   CommunicationLogPanel,
   type CommunicationLogItem,
 } from "@/components/admin/CommunicationLogPanel";
->>>>>>> f18247c (增加CART)
 import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
 import { serverFetch, CLIENT_API_BASE } from "@/lib/api";
@@ -28,10 +25,7 @@ type AttachmentOut = {
   originalName: string;
   mimeType: string;
   size: number;
-<<<<<<< HEAD
-=======
   kind: string;
->>>>>>> f18247c (增加CART)
   createdAt: string;
 };
 
@@ -47,19 +41,13 @@ type AppEvent = {
 
 type ApplicationDetail = {
   id: number;
-<<<<<<< HEAD
-=======
   applicationNo: string | null;
->>>>>>> f18247c (增加CART)
   fullName: string;
   email: string;
   phone: string;
   country: string | null;
   needType: string;
-<<<<<<< HEAD
-=======
   serviceCategory: string | null;
->>>>>>> f18247c (增加CART)
   serviceSlug: string | null;
   serviceName: string | null;
   destination: string | null;
@@ -87,15 +75,12 @@ type ApplicationDetail = {
   translatedAnswer2: string | null;
   translatedAnswer3: string | null;
   finalBilingualReportUrl: string | null;
-<<<<<<< HEAD
-=======
   // CAR-T specific fields
   hospital: string | null;
   expertDoctor: string | null;
   arrivalDatetime: string | null;
   flightNumber: string | null;
   consultationDatetime: string | null;
->>>>>>> f18247c (增加CART)
   aiSummary: string | null;
   aiSummaryStatus: string;
   aiSummaryError: string | null;
@@ -123,10 +108,6 @@ export default async function AdminDetailPage({
   const res = await serverFetch(`/api/admin/applications/${params.id}`);
   if (res.status === 401) redirect(`/${lang}/admin/login`);
   if (res.status === 404) notFound();
-<<<<<<< HEAD
-  const app: ApplicationDetail = await res.json();
-
-=======
   if (!res.ok) {
     console.error(`Admin application detail API failed: ${res.status} ${res.statusText}`);
     throw new Error(`Failed to load application details`);
@@ -140,7 +121,6 @@ export default async function AdminDetailPage({
     ? await commRes.json()
     : [];
 
->>>>>>> f18247c (增加CART)
   const fmt = (d: string) =>
     new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", {
       dateStyle: "medium", timeStyle: "short",
@@ -154,10 +134,7 @@ export default async function AdminDetailPage({
     [f.email, app.email || "—"],
     [f.phone, app.phone],
     [f.country, app.country || "—"],
-<<<<<<< HEAD
-=======
     [f.serviceCategory, app.serviceCategory || "—"],
->>>>>>> f18247c (增加CART)
     [f.needType, app.needType],
     ...(app.serviceName ? [[si.colService, app.serviceName] as [string, string]] : []),
     [f.destination, app.destination || "—"],
@@ -178,14 +155,11 @@ export default async function AdminDetailPage({
           <StatusPanel id={app.id} dict={t} initialStatus={app.status} />
         </div>
 
-<<<<<<< HEAD
-=======
         {/* Send custom email to the client */}
         <div className="card mt-6">
           <SendEmailPanel id={app.id} dict={t} />
         </div>
 
->>>>>>> f18247c (增加CART)
         {/* Assignment */}
         <div className="card mt-6">
           <AssignPanel
@@ -210,11 +184,7 @@ export default async function AdminDetailPage({
         )}
 
         {/* Supreme edit (admin can do everything) */}
-<<<<<<< HEAD
-        <SupremeEditPanel app={app} dict={t} />
-=======
         <SupremeEditPanel app={app} dict={t} lang={lang} />
->>>>>>> f18247c (增加CART)
 
         {/* Contact info */}
         <div className="card mt-8">
@@ -229,8 +199,6 @@ export default async function AdminDetailPage({
           </dl>
         </div>
 
-<<<<<<< HEAD
-=======
         {/* Communication history (email / phone / meeting / other) */}
         <div className="card mt-6">
           <CommunicationLogPanel
@@ -241,7 +209,6 @@ export default async function AdminDetailPage({
           />
         </div>
 
->>>>>>> f18247c (增加CART)
         {/* Condition (second-opinion) */}
         {app.condition && (
           <div className="card mt-6">
@@ -266,13 +233,6 @@ export default async function AdminDetailPage({
               {app.attachments.length === 0 ? (
                 <p className="mt-3 text-sm text-slate-400">{a.noAttachments}</p>
               ) : (
-<<<<<<< HEAD
-                <AttachmentGallery
-                  attachments={app.attachments}
-                  urlPrefix={`${CLIENT_API_BASE}/api/admin/attachments`}
-                  downloadLabel={a.download}
-                />
-=======
                 <div className="mt-4 space-y-6">
                   {/* Client uploaded attachments (kind=source) */}
                   {(() => {
@@ -306,7 +266,6 @@ export default async function AdminDetailPage({
                     );
                   })()}
                 </div>
->>>>>>> f18247c (增加CART)
               )}
             </div>
 

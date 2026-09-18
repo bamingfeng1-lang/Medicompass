@@ -5,11 +5,7 @@
 // Source of truth for the "健康管理服务" section. Bilingual content lives here so
 // the strongly-typed dictionaries stay focused on UI chrome.
 
-<<<<<<< HEAD
-export type ServiceCategory = "basic" | "critical" | "wellness";
-=======
 export type ServiceCategory = "basic" | "critical" | "wellness" | "private-doctor" | "basic-medical" | "cross-border" | "longevity";
->>>>>>> f18247c (增加CART)
 
 export type ServiceCopy = {
   name: string;
@@ -57,8 +53,6 @@ export const SERVICE_CATEGORIES: {
     zhDesc: "从私人医生到功能医学与抗衰方案，主动管理长期健康。",
     enDesc: "From a private doctor to functional medicine and longevity plans.",
   },
-<<<<<<< HEAD
-=======
   {
     key: "private-doctor",
     zh: "私人医生",
@@ -87,7 +81,6 @@ export const SERVICE_CATEGORIES: {
     zhDesc: "融合前沿长寿医学科技，从精准检测、细胞 rejuvenation 到个性化健康管理，助您延缓衰老、提升生命质量。",
     enDesc: "Integrating cutting-edge longevity science — from precision testing and cellular rejuvenation to personalized health management.",
   },
->>>>>>> f18247c (增加CART)
 ];
 
 export const SERVICES: Service[] = [
@@ -918,8 +911,6 @@ export const SERVICES: Service[] = [
       ],
     },
   },
-<<<<<<< HEAD
-=======
   //  私人医生服务 ─────────────────────────────────────────────
   {
     slug: "medical-record",
@@ -1680,7 +1671,6 @@ export const SERVICES: Service[] = [
       audience: ["Those needing nutritional guidance", "People wanting customized diets", "Those focused on nutritional health"],
     },
   },
->>>>>>> f18247c (增加CART)
 ];
 
 export function getService(slug: string): Service | undefined {

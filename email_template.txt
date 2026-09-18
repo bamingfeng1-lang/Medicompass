@@ -40,36 +40,11 @@
 
     <!-- 邮件核心内容 -->
     <div class="content-body">
-<<<<<<< HEAD
-      
-      <!-- 中文部分 -->
-      <div class="lang-section">
-        <h2>尊敬的客户：</h2>
-        <p>您好！平台已成功收到您提交的国际第二诊疗意见申请及相关病历资料。感谢您对迈蒂康的信任。</p>
-        <p>面对健康的抉择，我们深知每一分钟的等待都至关重要。目前，我们的医学管理员正在对您上传的原始报告进行初步的整理与合规检查。</p>
-        
-        <div class="highlight-box">
-          <p>📌 我们的医学顾问将在未来 2 个工作日内通过电话或邮件与您取得联系，为您确认资料的完整性，并协助您匹配全球最对口的权威医学专家。</p>
-        </div>
-        
-        <p>在此期间，如果您有任何紧急补充资料或疑问，欢迎随时回复本封邮件。愿健康与您同行。</p>
-        
-        <div class="sign-off">
-          <strong>迈蒂康 (Medicompass) 全球服务团队</strong>
-        </div>
-      </div>
-
-      <!-- 英文部分 -->
-      <div class="lang-section">
-        <h2>Dear Customer,</h2>
-        <p>Hello! We have successfully received your application for an International Second Medical Opinion, along with your medical records submitted on the Medicompass platform. Thank you for your trust in us.</p>
-=======
     
       <!-- 英文部分 -->
       <div class="lang-section">
         <h2>Dear Customer,</h2>
         <p>Hello! We have successfully received your application for #服务申请的英文#, along with your medical records submitted on the Medicompass platform. Thank you for your trust in us.</p>
->>>>>>> f18247c (增加CART)
         <p>When facing critical health decisions, we deeply understand that every minute of waiting matters. Currently, our medical administrators are conducting an initial review and standardizing the medical documents you uploaded.</p>
         
         <div class="highlight-box-en">
@@ -84,8 +59,6 @@
         </div>
       </div>
 
-<<<<<<< HEAD
-=======
       <!-- 中文部分 -->
       <div class="lang-section">
         <h2>尊敬的客户：</h2>
@@ -105,7 +78,6 @@
 
       
 
->>>>>>> f18247c (增加CART)
     </div>
 
     <!-- 页脚灰色安全提示区 -->

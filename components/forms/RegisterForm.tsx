@@ -1,21 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-<<<<<<< HEAD
-import { CheckCircle2, ArrowLeft, Upload, X, FileText } from "lucide-react";
-=======
 import { CheckCircle2, ArrowLeft } from "lucide-react";
->>>>>>> f18247c (增加CART)
 import Link from "next/link";
 import type { Locale } from "@/lib/brand";
 import type { Dictionary } from "@/lib/dictionaries";
 import { clientApi } from "@/lib/api";
-<<<<<<< HEAD
-
-const MAX_FILE_BYTES = 15 * 1024 * 1024;
-=======
 import { FileDropzone, IMAGE_PDF_ACCEPT } from "@/components/FileDropzone";
->>>>>>> f18247c (增加CART)
 
 export type Field = {
   name: string;
@@ -28,15 +19,6 @@ export type Field = {
   accept?: string;
 };
 
-<<<<<<< HEAD
-function fmtSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
-
-=======
->>>>>>> f18247c (增加CART)
 type Role = "patient" | "provider" | "doctor";
 
 export function RegisterForm({
@@ -54,10 +36,7 @@ export function RegisterForm({
 }) {
   const t = dict.register;
   const c = dict.common;
-<<<<<<< HEAD
-=======
   const up = dict.apply;
->>>>>>> f18247c (增加CART)
   const [values, setValues] = useState<Record<string, string>>(
     initialPhone ? { phone: initialPhone } : {},
   );
@@ -66,13 +45,8 @@ export function RegisterForm({
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "done">("idle");
-<<<<<<< HEAD
-  const [files, setFiles] = useState<Record<string, File | null>>({});
-  const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
-=======
   // Each file-type field holds its own pending file list (multi-select, multi-batch).
   const [files, setFiles] = useState<Record<string, File[]>>({});
->>>>>>> f18247c (增加CART)
   const successRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -86,32 +60,12 @@ export function RegisterForm({
   // selected need type is the second-opinion option (first in the list).
   const isPatientSecondOpinion =
     role === "patient" && values["needType"] === t.fields.needTypeOptions?.[0];
-<<<<<<< HEAD
-  const patientFileRef = useRef<HTMLInputElement>(null);
-
-  const pickFile = (name: string, fileList: FileList | null) => {
-    const file = fileList?.[0] ?? null;
-    if (file && file.size > MAX_FILE_BYTES) {
-      setErrors((e) => ({ ...e, [name]: t.licenseFileError }));
-      return;
-    }
-    setFiles((s) => ({ ...s, [name]: file }));
-    setErrors((e) => ({ ...e, [name]: "" }));
-  };
-
-  const clearFile = (name: string) => {
-    setFiles((s) => ({ ...s, [name]: null }));
-    if (fileInputs.current[name]) fileInputs.current[name]!.value = "";
-  };
-
-=======
 
   const setFieldFiles = (name: string, list: File[]) => {
     setFiles((s) => ({ ...s, [name]: list }));
     setErrors((e) => ({ ...e, [name]: "" }));
   };
 
->>>>>>> f18247c (增加CART)
   const set = (name: string, v: string) => {
     setValues((s) => ({ ...s, [name]: v }));
     setErrors((e) => ({ ...e, [name]: "" }));
@@ -146,21 +100,11 @@ export function RegisterForm({
         fd.append("lang", lang);
         for (const f of fields) {
           if (f.type === "file") {
-<<<<<<< HEAD
-            const file = files[f.name];
-            if (file) fd.append("licenseFile", file);
-          }
-        }
-        // Optional medical attachment for the patient (second-opinion) path.
-        const medical = files["medical"];
-        if (medical) fd.append("attachments", medical);
-=======
             for (const file of files[f.name] ?? []) fd.append("licenseFile", file);
           }
         }
         // Optional medical attachments for the patient (second-opinion) path.
         for (const file of files["medical"] ?? []) fd.append("attachments", file);
->>>>>>> f18247c (增加CART)
         res = await fetch(clientApi(`/api/register/${role}`), {
           method: "POST",
           credentials: "include",
@@ -249,46 +193,6 @@ export function RegisterForm({
                 ))}
               </select>
             ) : f.type === "file" ? (
-<<<<<<< HEAD
-              <div>
-                <input
-                  ref={(el) => {
-                    fileInputs.current[f.name] = el;
-                  }}
-                  id={f.name}
-                  type="file"
-                  accept={f.accept}
-                  className="hidden"
-                  onChange={(e) => pickFile(f.name, e.target.files)}
-                />
-                {files[f.name] ? (
-                  <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                    <FileText className="h-4 w-4 shrink-0 text-brand-deep" />
-                    <span className="flex-1 truncate text-sm text-slate-700">
-                      {files[f.name]!.name}
-                    </span>
-                    <span className="text-xs text-slate-400">{fmtSize(files[f.name]!.size)}</span>
-                    <button
-                      type="button"
-                      onClick={() => clearFile(f.name)}
-                      className="rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-red-500"
-                      aria-label="remove"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => fileInputs.current[f.name]?.click()}
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep"
-                  >
-                    <Upload className="h-4 w-4" />
-                    {t.licenseChooseFile}
-                  </button>
-                )}
-              </div>
-=======
               <FileDropzone
                 files={files[f.name] ?? []}
                 onChange={(list) => setFieldFiles(f.name, list)}
@@ -302,7 +206,6 @@ export function RegisterForm({
                   fileTypeError: up.fileTypeError,
                 }}
               />
->>>>>>> f18247c (增加CART)
             ) : (
               <input
                 id={f.name}
@@ -322,42 +225,6 @@ export function RegisterForm({
       {isPatientSecondOpinion && (
         <div className="mt-5">
           <label className="field-label">{t.medicalUploadLabel}</label>
-<<<<<<< HEAD
-          <input
-            ref={patientFileRef}
-            type="file"
-            accept="application/pdf,image/*"
-            className="hidden"
-            onChange={(e) => pickFile("medical", e.target.files)}
-          />
-          {files["medical"] ? (
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2">
-              <FileText className="h-4 w-4 shrink-0 text-brand-deep" />
-              <span className="flex-1 truncate text-sm text-slate-700">
-                {files["medical"]!.name}
-              </span>
-              <span className="text-xs text-slate-400">{fmtSize(files["medical"]!.size)}</span>
-              <button
-                type="button"
-                onClick={() => clearFile("medical")}
-                className="rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-red-500"
-                aria-label="remove"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => patientFileRef.current?.click()}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep"
-            >
-              <Upload className="h-4 w-4" />
-              {t.medicalChooseFile}
-            </button>
-          )}
-          <p className="mt-1 text-xs text-slate-400">{t.medicalUploadHint}</p>
-=======
           <FileDropzone
             files={files["medical"] ?? []}
             onChange={(list) => setFieldFiles("medical", list)}
@@ -370,7 +237,6 @@ export function RegisterForm({
               fileTypeError: up.fileTypeError,
             }}
           />
->>>>>>> f18247c (增加CART)
         </div>
       )}
 
@@ -429,9 +295,6 @@ export function RegisterForm({
             }}
             className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky"
           />
-<<<<<<< HEAD
-          <span className="text-sm text-slate-600">{t.consent}</span>
-=======
           <span className="text-sm text-slate-600">
             {(() => {
               const text = t.consent;
@@ -450,7 +313,6 @@ export function RegisterForm({
               return text;
             })()}
           </span>
->>>>>>> f18247c (增加CART)
         </label>
         {errors.__agree && <p className="mt-1 text-xs text-red-500">{errors.__agree}</p>}
       </div>

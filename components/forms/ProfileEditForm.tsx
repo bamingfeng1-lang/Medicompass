@@ -1,15 +1,5 @@
 "use client";
 
-<<<<<<< HEAD
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Upload, X, FileText, Save, Send } from "lucide-react";
-import type { Dictionary } from "@/lib/dictionaries";
-import { clientApi, type ProviderProfile, type DoctorProfile } from "@/lib/api";
-import { RegistrationStatusBadge } from "@/components/RegistrationStatusBadge";
-
-const MAX_FILE_BYTES = 15 * 1024 * 1024;
-=======
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, FileText, Save, Send, Upload } from "lucide-react";
@@ -17,7 +7,6 @@ import type { Dictionary } from "@/lib/dictionaries";
 import { clientApi, type ProviderProfile, type DoctorProfile } from "@/lib/api";
 import { RegistrationStatusBadge } from "@/components/RegistrationStatusBadge";
 import { FileDropzone } from "@/components/FileDropzone";
->>>>>>> f18247c (增加CART)
 
 function fmtSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -43,25 +32,16 @@ export function ProfileEditForm({
 }) {
   const p = dict.profile;
   const f = dict.register.fields;
-<<<<<<< HEAD
-=======
   const up = dict.apply;
->>>>>>> f18247c (增加CART)
   const router = useRouter();
 
   const [status, setStatus] = useState(initial.status);
   const [reviewNote, setReviewNote] = useState(initial.reviewNote);
   const [editable, setEditable] = useState(initial.editable);
   const [attachments, setAttachments] = useState(initial.attachments);
-<<<<<<< HEAD
-  const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
-  const [busy, setBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
-=======
   const [pending, setPending] = useState<File[]>([]);
   const [msg, setMsg] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
->>>>>>> f18247c (增加CART)
 
   const initialValues: Record<string, string> =
     role === "provider"
@@ -169,26 +149,13 @@ export function ProfileEditForm({
     }
   };
 
-<<<<<<< HEAD
-  const onUpload = async (file: File | null) => {
-    if (!file) return;
-    if (file.size > MAX_FILE_BYTES) {
-      setMsg({ kind: "err", text: p.uploadError });
-      return;
-    }
-=======
   const onUpload = async () => {
     if (busy || pending.length === 0) return;
->>>>>>> f18247c (增加CART)
     setBusy(true);
     setMsg(null);
     try {
       const fd = new FormData();
-<<<<<<< HEAD
-      fd.append("licenseFile", file);
-=======
       for (const file of pending) fd.append("licenseFile", file);
->>>>>>> f18247c (增加CART)
       const res = await fetch(clientApi(`/api/auth/registration/${role}/license`), {
         method: "POST",
         credentials: "include",
@@ -199,20 +166,13 @@ export function ProfileEditForm({
       } else {
         const detail = await refetch();
         if (detail) setAttachments(detail.attachments);
-<<<<<<< HEAD
-=======
         setPending([]);
->>>>>>> f18247c (增加CART)
         router.refresh();
       }
     } catch {
       setMsg({ kind: "err", text: p.uploadError });
     } finally {
       setBusy(false);
-<<<<<<< HEAD
-      if (fileRef.current) fileRef.current.value = "";
-=======
->>>>>>> f18247c (增加CART)
     }
   };
 
@@ -336,24 +296,6 @@ export function ProfileEditForm({
         )}
         {editable && (
           <div className="mt-4">
-<<<<<<< HEAD
-            <input
-              ref={fileRef}
-              type="file"
-              accept="application/pdf,image/*"
-              className="hidden"
-              onChange={(e) => onUpload(e.target.files?.[0] ?? null)}
-            />
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              disabled={busy}
-              className="flex items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep"
-            >
-              <Upload className="h-4 w-4" />
-              {busy ? p.uploading : p.uploadLicense}
-            </button>
-=======
             <FileDropzone
               files={pending}
               onChange={setPending}
@@ -378,7 +320,6 @@ export function ProfileEditForm({
                 {busy ? p.uploading : p.uploadLicense} ({pending.length})
               </button>
             )}
->>>>>>> f18247c (增加CART)
           </div>
         )}
       </div>

@@ -10,10 +10,7 @@ export const dynamic = "force-dynamic";
 
 type ApplicationListItem = {
   id: number;
-<<<<<<< HEAD
-=======
   applicationNo: string | null;
->>>>>>> f18247c (增加CART)
   fullName: string;
   email: string;
   needType: string;
@@ -51,23 +48,13 @@ export default async function AdminListPage({
   searchParams,
 }: {
   params: { lang: string };
-<<<<<<< HEAD
-  searchParams?: { needType?: string };
-=======
   searchParams?: { serviceCategory?: string; search?: string; status?: string };
->>>>>>> f18247c (增加CART)
 }) {
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
   const a = t.admin;
   const sb = t.sidebar;
-<<<<<<< HEAD
-  const needOptions = t.register.fields.needTypeOptions;
-  const activeNeed = searchParams?.needType;
-
-  const qs = activeNeed ? `?needType=${encodeURIComponent(activeNeed)}` : "";
-=======
   const activeCategory = searchParams?.serviceCategory;
   const activeSearch = searchParams?.search;
   const activeStatus = searchParams?.status;
@@ -77,7 +64,6 @@ export default async function AdminListPage({
   if (activeSearch) qsParts.push(`search=${encodeURIComponent(activeSearch)}`);
   if (activeStatus) qsParts.push(`status=${encodeURIComponent(activeStatus)}`);
   const qs = qsParts.length ? `?${qsParts.join("&")}` : "";
->>>>>>> f18247c (增加CART)
   const res = await serverFetch(`/api/admin/applications${qs}`);
   if (res.status === 401) redirect(`/${lang}/admin/login`);
   const apps: ApplicationListItem[] = res.ok ? await res.json() : [];
@@ -105,17 +91,6 @@ export default async function AdminListPage({
         <h1 className="text-3xl font-bold tracking-tight text-brand-950">{sb.adminApplications}</h1>
       </div>
 
-<<<<<<< HEAD
-      {/* need_type filter */}
-      <div className="mb-8 flex flex-wrap items-center gap-2">
-        <span className="mr-1 text-sm text-slate-500">{a.filterLabel}:</span>
-        {chip(a.filterAll, `/${lang}/admin`, !activeNeed)}
-        {needOptions.map((o) =>
-          chip(o, `/${lang}/admin?needType=${encodeURIComponent(o)}`, activeNeed === o),
-        )}
-      </div>
-
-=======
       {/* Service category filter */}
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <span className="mr-1 text-sm text-slate-500">{lang === "zh" ? "服务类别:" : "Service Category:"}</span>
@@ -157,7 +132,6 @@ export default async function AdminListPage({
         </form>
       </div>
 
->>>>>>> f18247c (增加CART)
       {apps.length === 0 ? (
         <div className="card text-center text-slate-500">{a.listEmpty}</div>
       ) : (
@@ -167,16 +141,9 @@ export default async function AdminListPage({
               <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-5 py-3 font-medium">{a.colName}</th>
-<<<<<<< HEAD
-                  <th className="px-5 py-3 font-medium">{a.colNeed}</th>
-                  <th className="px-5 py-3 font-medium">{a.colService}</th>
-                  <th className="px-5 py-3 font-medium">{a.colCountry}</th>
-                  <th className="px-5 py-3 font-medium">{a.colFiles}</th>
-=======
                   <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
                   <th className="px-5 py-3 font-medium">{a.colNeed}</th>
                   <th className="px-5 py-3 font-medium">{a.colCountry}</th>
->>>>>>> f18247c (增加CART)
                   <th className="px-5 py-3 font-medium">{a.colAi}</th>
                   <th className="px-5 py-3 font-medium">{a.colStatus}</th>
                   <th className="px-5 py-3 font-medium">{a.colTime}</th>
@@ -190,12 +157,6 @@ export default async function AdminListPage({
                       <p className="font-medium text-brand-950">{app.fullName}</p>
                       <p className="text-xs text-slate-400">{app.email}</p>
                     </td>
-<<<<<<< HEAD
-                    <td className="px-5 py-3 text-slate-600">{app.needType}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.serviceName || "—"}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.attachmentCount}</td>
-=======
                     <td className="px-5 py-3">
                       <span className="font-mono text-sm text-brand-deep">
                         {app.applicationNo || "—"}
@@ -203,7 +164,6 @@ export default async function AdminListPage({
                     </td>
                     <td className="px-5 py-3 text-slate-600">{app.needType}</td>
                     <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
->>>>>>> f18247c (增加CART)
                     <td className="px-5 py-3"><AiBadge status={app.aiSummaryStatus} dict={t} /></td>
                     <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
                     <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>

@@ -133,9 +133,6 @@ export function QuickRegisterForm({
           <input type="checkbox" checked={agree}
             onChange={(e) => { setAgree(e.target.checked); setErrors((x) => ({ ...x, __agree: "" })); }}
             className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-deep focus:ring-brand-sky" />
-<<<<<<< HEAD
-          <span className="text-sm text-slate-600">{t.consent}</span>
-=======
           <span className="text-sm text-slate-600">
             {(() => {
               const text = t.consent;
@@ -154,7 +151,6 @@ export function QuickRegisterForm({
               return text;
             })()}
           </span>
->>>>>>> f18247c (增加CART)
         </label>
         {errors.__agree && <p className="text-xs text-red-500">{errors.__agree}</p>}
         {errors.__submit && <p className="text-sm text-red-500">{errors.__submit}</p>}
