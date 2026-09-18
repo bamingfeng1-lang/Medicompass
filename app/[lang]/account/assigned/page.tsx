@@ -6,6 +6,7 @@ import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
 import { getCurrentUser, getAssignedApplications } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Pagination } from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -16,20 +17,25 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
 
 export default async function AssignedApplicationsPage({
   params,
+  searchParams,
 }: {
   params: { lang: string };
+  searchParams?: { page?: string };
 }) {
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
   const tk = t.task;
+  const f = t.register.fields;
   const p = (path: string) => `/${lang}${path}`;
 
   const user = await getCurrentUser();
   if (!user) redirect(p("/login"));
   if (!user.roles.includes("provider") && !user.roles.includes("doctor")) redirect(p(""));
 
-  const apps = await getAssignedApplications();
+  const currentPage = parseInt(searchParams?.page || "1", 10);
+  const pageSize = 10;
+  const result = await getAssignedApplications(currentPage, pageSize);
 
   const fmt = (d: string) =>
     new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", {
@@ -43,55 +49,62 @@ export default async function AssignedApplicationsPage({
         <p className="mt-2 text-sm leading-relaxed text-slate-600">{tk.listDesc}</p>
       </div>
 
-      {apps.length === 0 ? (
+      {result.items.length === 0 ? (
         <div className="card text-center">
           <ClipboardList className="mx-auto h-12 w-12 text-slate-300" />
           <p className="mt-4 text-slate-500">{tk.listEmpty}</p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colNeed}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colService}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colCustomer}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colCountry}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colStatus}</th>
-                  <th className="px-5 py-3 font-medium">{tk.colTime}</th>
-                  <th className="px-5 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {apps.map((app) => (
-                  <tr key={app.id} className="transition hover:bg-slate-50/60">
-                    <td className="px-5 py-3">
-                      <span className="font-mono text-sm text-brand-deep">
-                        {app.applicationNo || "—"}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 font-medium text-brand-950">{app.needType}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.serviceName || app.message || "—"}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.fullName}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
-                    <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
-                    <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>
-                    <td className="px-5 py-3 text-right">
-                      <Link
-                        href={p(`/account/assigned/${app.id}`)}
-                        className="font-medium text-brand-deep hover:underline"
-                      >
-                        {tk.view}
-                      </Link>
-                    </td>
+        <>
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
+                    <th className="px-5 py-3 font-medium">{f.serviceCategory}</th>
+                    <th className="px-5 py-3 font-medium">{tk.colNeed}</th>
+                    <th className="px-5 py-3 font-medium">{tk.colCustomer}</th>
+                    <th className="px-5 py-3 font-medium">{tk.colCountry}</th>
+                    <th className="px-5 py-3 font-medium">{tk.colStatus}</th>
+                    <th className="px-5 py-3 font-medium">{tk.colTime}</th>
+                    <th className="px-5 py-3" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {result.items.map((app) => (
+                    <tr key={app.id} className="transition hover:bg-slate-50/60">
+                      <td className="px-5 py-3">
+                        <span className="font-mono text-sm text-brand-deep">
+                          {app.applicationNo || "—"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-600">{app.serviceCategory || "—"}</td>
+                      <td className="px-5 py-3 font-medium text-brand-950">{app.needType}</td>
+                      <td className="px-5 py-3 text-slate-600">{app.fullName}</td>
+                      <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
+                      <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
+                      <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>
+                      <td className="px-5 py-3 text-right">
+                        <Link
+                          href={p(`/account/assigned/${app.id}`)}
+                          className="font-medium text-brand-deep hover:underline"
+                        >
+                          {tk.view}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+          <Pagination
+            currentPage={result.page}
+            totalPages={result.totalPages}
+            baseUrl={p("/account/assigned")}
+          />
+        </>
       )}
     </div>
   );

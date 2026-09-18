@@ -47,10 +47,16 @@ export default async function MyApplicationDetailPage({
     [f.email, app.email || "—"],
     [f.phone, app.phone],
     [f.country, app.country || "—"],
+    [f.serviceCategory, app.serviceCategory || "—"],
     [f.needType, app.needType],
-    ...(app.serviceName ? [[ac.colService, app.serviceName] as [string, string]] : []),
     [f.destination, app.destination || "—"],
-    [ac.colTime, fmt(app.createdAt)],
+    [f.condition, app.condition || "—"],
+    [t.admin.supremeHospital, app.hospital || "—"],
+    [t.admin.supremeExpertDoctor, app.expertDoctor || "—"],
+    [t.admin.supremeArrivalDatetime, app.arrivalDatetime ? fmt(app.arrivalDatetime) : "—"],
+    [t.admin.supremeFlightNumber, app.flightNumber || "—"],
+    [t.admin.supremeConsultationDatetime, app.consultationDatetime ? fmt(app.consultationDatetime) : "—"],
+    [ac.message, app.message || "—"],
   ];
 
   return (
@@ -82,61 +88,6 @@ export default async function MyApplicationDetailPage({
             ))}
           </dl>
         </div>
-
-        {/* CAR-T specific info */}
-        {(app.hospital || app.expertDoctor || app.arrivalDatetime || app.flightNumber || app.consultationDatetime) && (
-          <div className="card mt-6">
-            <h2 className="text-lg font-semibold text-brand-950">{lang === "zh" ? "CAR-T 治疗信息" : "CAR-T Treatment Info"}</h2>
-            <dl className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2">
-              {app.hospital && (
-                <div className="flex flex-col">
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "医院" : "Hospital"}</dt>
-                  <dd className="mt-0.5 text-sm text-slate-700">{app.hospital}</dd>
-                </div>
-              )}
-              {app.expertDoctor && (
-                <div className="flex flex-col">
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "专家医生" : "Expert Doctor"}</dt>
-                  <dd className="mt-0.5 text-sm text-slate-700">{app.expertDoctor}</dd>
-                </div>
-              )}
-              {app.arrivalDatetime && (
-                <div className="flex flex-col">
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "来华日期时间" : "Arrival Date/Time"}</dt>
-                  <dd className="mt-0.5 text-sm text-slate-700">{fmt(app.arrivalDatetime)}</dd>
-                </div>
-              )}
-              {app.flightNumber && (
-                <div className="flex flex-col">
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "航班号" : "Flight Number"}</dt>
-                  <dd className="mt-0.5 text-sm text-slate-700">{app.flightNumber}</dd>
-                </div>
-              )}
-              {app.consultationDatetime && (
-                <div className="flex flex-col">
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">{lang === "zh" ? "看诊日期时间" : "Consultation Date/Time"}</dt>
-                  <dd className="mt-0.5 text-sm text-slate-700">{fmt(app.consultationDatetime)}</dd>
-                </div>
-              )}
-            </dl>
-          </div>
-        )}
-
-        {/* Condition (second-opinion) */}
-        {app.condition && (
-          <div className="card mt-6">
-            <h2 className="text-lg font-semibold text-brand-950">{ac.conditionInfo}</h2>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{app.condition}</p>
-          </div>
-        )}
-
-        {/* Message (enquiry) */}
-        {app.message && (
-          <div className="card mt-6">
-            <h2 className="text-lg font-semibold text-brand-950">{ac.message}</h2>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{app.message}</p>
-          </div>
-        )}
 
         {/* Attachments — second-opinion only (client uploaded) */}
         {!isEnquiry && (

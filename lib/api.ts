@@ -113,6 +113,7 @@ export type MyApplicationListItem = {
   fullName: string;
   email: string;
   needType: string;
+  serviceCategory: string | null;
   serviceName: string | null;
   country: string | null;
   message: string | null;
@@ -120,6 +121,14 @@ export type MyApplicationListItem = {
   aiSummaryStatus: string;
   status: string;
   createdAt: string;
+};
+
+export type PaginatedApplications = {
+  items: MyApplicationListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 };
 
 export type MyAttachment = {
@@ -183,13 +192,13 @@ export type MyApplicationDetail = {
 };
 
 /** Server-side: applications/enquiries owned by the logged-in user. */
-export async function getMyApplications(): Promise<MyApplicationListItem[]> {
+export async function getMyApplications(page: number = 1, pageSize: number = 10): Promise<PaginatedApplications> {
   try {
-    const res = await serverFetch("/api/auth/applications");
-    if (!res.ok) return [];
-    return (await res.json()) as MyApplicationListItem[];
+    const res = await serverFetch(`/api/auth/applications?page=${page}&pageSize=${pageSize}`);
+    if (!res.ok) return { items: [], total: 0, page, pageSize, totalPages: 0 };
+    return (await res.json()) as PaginatedApplications;
   } catch {
-    return [];
+    return { items: [], total: 0, page, pageSize, totalPages: 0 };
   }
 }
 
@@ -205,13 +214,13 @@ export async function getMyApplication(id: string | number): Promise<MyApplicati
 }
 
 /** Server-side: applications assigned to the logged-in provider/doctor. */
-export async function getAssignedApplications(): Promise<MyApplicationListItem[]> {
+export async function getAssignedApplications(page: number = 1, pageSize: number = 10): Promise<PaginatedApplications> {
   try {
-    const res = await serverFetch("/api/auth/applications/assigned");
-    if (!res.ok) return [];
-    return (await res.json()) as MyApplicationListItem[];
+    const res = await serverFetch(`/api/auth/applications/assigned?page=${page}&pageSize=${pageSize}`);
+    if (!res.ok) return { items: [], total: 0, page, pageSize, totalPages: 0 };
+    return (await res.json()) as PaginatedApplications;
   } catch {
-    return [];
+    return { items: [], total: 0, page, pageSize, totalPages: 0 };
   }
 }
 

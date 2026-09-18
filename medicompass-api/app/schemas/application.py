@@ -18,6 +18,7 @@ class ApplicationListItem(CamelModel):
     full_name: str
     email: str
     need_type: str
+    service_category: str | None
     service_name: str | None
     country: str | None
     message: str | None
@@ -25,6 +26,14 @@ class ApplicationListItem(CamelModel):
     ai_summary_status: str
     status: str
     created_at: datetime
+
+
+class PaginatedApplications(CamelModel):
+    items: list[ApplicationListItem]
+    total: int
+    page: int
+    page_size: int
+    total_pages: int
 
 
 class ApplicationEventOut(CamelModel):

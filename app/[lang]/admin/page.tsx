@@ -5,6 +5,7 @@ import { isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
 import { serverFetch } from "@/lib/api";
 import { StatusBadge } from "@/components/StatusBadge";
+import { Pagination } from "@/components/Pagination";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ type ApplicationListItem = {
   fullName: string;
   email: string;
   needType: string;
+  serviceCategory: string | null;
   serviceName: string | null;
   country: string | null;
   message: string | null;
@@ -21,6 +23,14 @@ type ApplicationListItem = {
   aiSummaryStatus: string;
   status: string;
   createdAt: string;
+};
+
+type PaginatedResult = {
+  items: ApplicationListItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 };
 
 export function generateMetadata({ params }: { params: { lang: string } }): Metadata {
@@ -48,25 +58,30 @@ export default async function AdminListPage({
   searchParams,
 }: {
   params: { lang: string };
-  searchParams?: { serviceCategory?: string; search?: string; status?: string };
+  searchParams?: { serviceCategory?: string; search?: string; status?: string; page?: string };
 }) {
   if (!isLocale(params.lang)) notFound();
   const lang = params.lang as Locale;
   const t = getDictionary(lang);
   const a = t.admin;
   const sb = t.sidebar;
+  const f = t.register.fields;
   const activeCategory = searchParams?.serviceCategory;
   const activeSearch = searchParams?.search;
   const activeStatus = searchParams?.status;
+  const currentPage = parseInt(searchParams?.page || "1", 10);
+  const pageSize = 10;
 
   const qsParts: string[] = [];
   if (activeCategory) qsParts.push(`serviceCategory=${encodeURIComponent(activeCategory)}`);
   if (activeSearch) qsParts.push(`search=${encodeURIComponent(activeSearch)}`);
   if (activeStatus) qsParts.push(`status=${encodeURIComponent(activeStatus)}`);
+  qsParts.push(`page=${currentPage}`);
+  qsParts.push(`pageSize=${pageSize}`);
   const qs = qsParts.length ? `?${qsParts.join("&")}` : "";
   const res = await serverFetch(`/api/admin/applications${qs}`);
   if (res.status === 401) redirect(`/${lang}/admin/login`);
-  const apps: ApplicationListItem[] = res.ok ? await res.json() : [];
+  const result: PaginatedResult = res.ok ? await res.json() : { items: [], total: 0, page: currentPage, pageSize, totalPages: 0 };
 
   const fmt = (d: string) =>
     new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-US", {
@@ -132,53 +147,67 @@ export default async function AdminListPage({
         </form>
       </div>
 
-      {apps.length === 0 ? (
+      {result.items.length === 0 ? (
         <div className="card text-center text-slate-500">{a.listEmpty}</div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-5 py-3 font-medium">{a.colName}</th>
-                  <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
-                  <th className="px-5 py-3 font-medium">{a.colNeed}</th>
-                  <th className="px-5 py-3 font-medium">{a.colCountry}</th>
-                  <th className="px-5 py-3 font-medium">{a.colAi}</th>
-                  <th className="px-5 py-3 font-medium">{a.colStatus}</th>
-                  <th className="px-5 py-3 font-medium">{a.colTime}</th>
-                  <th className="px-5 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {apps.map((app) => (
-                  <tr key={app.id} className="transition hover:bg-slate-50/60">
-                    <td className="px-5 py-3">
-                      <p className="font-medium text-brand-950">{app.fullName}</p>
-                      <p className="text-xs text-slate-400">{app.email}</p>
-                    </td>
-                    <td className="px-5 py-3">
-                      <span className="font-mono text-sm text-brand-deep">
-                        {app.applicationNo || "—"}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3 text-slate-600">{app.needType}</td>
-                    <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
-                    <td className="px-5 py-3"><AiBadge status={app.aiSummaryStatus} dict={t} /></td>
-                    <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
-                    <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>
-                    <td className="px-5 py-3 text-right">
-                      <Link href={`/${lang}/admin/applications/${app.id}`}
-                        className="font-medium text-brand-deep hover:underline">
-                        {a.view}
-                      </Link>
-                    </td>
+        <>
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-5 py-3 font-medium">{a.colName}</th>
+                    <th className="px-5 py-3 font-medium">{lang === "zh" ? "申请编号" : "App No."}</th>
+                    <th className="px-5 py-3 font-medium">{f.serviceCategory}</th>
+                    <th className="px-5 py-3 font-medium">{a.colNeed}</th>
+                    <th className="px-5 py-3 font-medium">{a.colCountry}</th>
+                    <th className="px-5 py-3 font-medium">{a.colAi}</th>
+                    <th className="px-5 py-3 font-medium">{a.colStatus}</th>
+                    <th className="px-5 py-3 font-medium">{a.colTime}</th>
+                    <th className="px-5 py-3" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {result.items.map((app) => (
+                    <tr key={app.id} className="transition hover:bg-slate-50/60">
+                      <td className="px-5 py-3">
+                        <p className="font-medium text-brand-950">{app.fullName}</p>
+                        <p className="text-xs text-slate-400">{app.email}</p>
+                      </td>
+                      <td className="px-5 py-3">
+                        <span className="font-mono text-sm text-brand-deep">
+                          {app.applicationNo || "—"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-3 text-slate-600">{app.serviceCategory || "—"}</td>
+                      <td className="px-5 py-3 text-slate-600">{app.needType}</td>
+                      <td className="px-5 py-3 text-slate-600">{app.country || "—"}</td>
+                      <td className="px-5 py-3"><AiBadge status={app.aiSummaryStatus} dict={t} /></td>
+                      <td className="px-5 py-3"><StatusBadge status={app.status} dict={t} /></td>
+                      <td className="px-5 py-3 text-xs text-slate-500">{fmt(app.createdAt)}</td>
+                      <td className="px-5 py-3 text-right">
+                        <Link href={`/${lang}/admin/applications/${app.id}`}
+                          className="font-medium text-brand-deep hover:underline">
+                          {a.view}
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+          <Pagination
+            currentPage={result.page}
+            totalPages={result.totalPages}
+            baseUrl={`/${lang}/admin`}
+            extraParams={{
+              serviceCategory: activeCategory || "",
+              search: activeSearch || "",
+              status: activeStatus || "",
+            }}
+          />
+        </>
       )}
     </div>
   );

@@ -109,6 +109,12 @@ export function SupremeEditPanel({
           question1: v.question1, question2: v.question2, question3: v.question3,
           doctorAnswer1: v.doctorAnswer1, doctorAnswer2: v.doctorAnswer2, doctorAnswer3: v.doctorAnswer3,
           translatedAnswer1: v.translatedAnswer1, translatedAnswer2: v.translatedAnswer2, translatedAnswer3: v.translatedAnswer3,
+          // CAR-T specific fields
+          hospital: v.hospital || null,
+          expertDoctor: v.expertDoctor || null,
+          arrivalDatetime: v.arrivalDatetime || null,
+          flightNumber: v.flightNumber || null,
+          consultationDatetime: v.consultationDatetime || null,
         }),
       });
       if (!res.ok) {
@@ -166,6 +172,12 @@ export function SupremeEditPanel({
       [f.needType, app.needType],
       [f.destination, app.destination],
       [f.condition, app.condition],
+      // CAR-T specific fields
+      [a.supremeHospital, app.hospital],
+      [a.supremeExpertDoctor, app.expertDoctor],
+      [a.supremeArrivalDatetime, app.arrivalDatetime],
+      [a.supremeFlightNumber, app.flightNumber],
+      [a.supremeConsultationDatetime, app.consultationDatetime],
       [a.supremeMessage, app.message],
       [a.supremeMedicalSummary, app.medicalSummary],
       [a.supremeLabResults, app.labResults],
@@ -179,12 +191,6 @@ export function SupremeEditPanel({
       [a.supremeTrA1, app.translatedAnswer1],
       [a.supremeTrA2, app.translatedAnswer2],
       [a.supremeTrA3, app.translatedAnswer3],
-      // CAR-T specific fields
-      [lang === "zh" ? "医院" : "Hospital", app.hospital],
-      [lang === "zh" ? "专家医生" : "Expert Doctor", app.expertDoctor],
-      [lang === "zh" ? "来华日期时间" : "Arrival Date/Time", app.arrivalDatetime],
-      [lang === "zh" ? "航班号" : "Flight Number", app.flightNumber],
-      [lang === "zh" ? "看诊日期时间" : "Consultation Date/Time", app.consultationDatetime],
     ];
 
     return (
@@ -276,6 +282,46 @@ export function SupremeEditPanel({
         <label className="field-label">{f.condition}</label>
         <textarea className={fieldCls} rows={3} value={v.condition} onChange={(e) => set("condition", e.target.value)} />
       </div>
+
+      {/* CAR-T specific fields - only shown when service category is CAR-T */}
+      {v.serviceCategory === "CAR-T" && (
+        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <h3 className="mb-4 text-sm font-semibold text-blue-900">{a.carTSectionTitle}</h3>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="field-label">{a.supremeHospital}</label>
+              <input className={fieldCls} value={v.hospital} onChange={(e) => set("hospital", e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">{a.supremeExpertDoctor}</label>
+              <input className={fieldCls} value={v.expertDoctor} onChange={(e) => set("expertDoctor", e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">{a.supremeArrivalDatetime}</label>
+              <input
+                type="datetime-local"
+                className={fieldCls}
+                value={v.arrivalDatetime ? v.arrivalDatetime.slice(0, 16) : ""}
+                onChange={(e) => set("arrivalDatetime", e.target.value)}
+              />
+            </div>
+            <div>
+              <label className="field-label">{a.supremeFlightNumber}</label>
+              <input className={fieldCls} value={v.flightNumber} onChange={(e) => set("flightNumber", e.target.value)} />
+            </div>
+            <div>
+              <label className="field-label">{a.supremeConsultationDatetime}</label>
+              <input
+                type="datetime-local"
+                className={fieldCls}
+                value={v.consultationDatetime ? v.consultationDatetime.slice(0, 16) : ""}
+                onChange={(e) => set("consultationDatetime", e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="mt-4 sm:col-span-2">
         <label className="field-label">{a.supremeMessage}</label>
         <textarea className={fieldCls} rows={3} value={v.message} onChange={(e) => set("message", e.target.value)} />

@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import quote
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Request, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -35,6 +35,7 @@ from app.schemas.application import (
     ApplicationListItem,
     AttachmentOut,
     OpinionPayload,
+    PaginatedApplications,
     RejectPayload,
     StructurePayload,
     TranslatePayload,
@@ -203,8 +204,10 @@ def my_profile(
 
 
 # ── my applications (records owned by the logged-in user) ────────────
-@router.get("/applications", response_model=list[ApplicationListItem])
+@router.get("/applications", response_model=PaginatedApplications)
 def my_applications(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -234,14 +237,27 @@ def my_applications(
         )
         .order_by(Application.created_at.desc())
     )
+    
+    # Count total records
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = db.execute(count_stmt).scalar() or 0
+    
+    # Calculate total pages
+    total_pages = (total + page_size - 1) // page_size
+    
+    # Apply pagination
+    offset = (page - 1) * page_size
+    stmt = stmt.offset(offset).limit(page_size)
+    
     rows = db.execute(stmt).all()
-    return [
+    items = [
         ApplicationListItem(
             id=app.id,
             application_no=app.application_no,
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
+            service_category=app.service_category,
             service_name=app.service_name,
             country=app.country,
             message=app.message,
@@ -252,19 +268,29 @@ def my_applications(
         )
         for app, cnt in rows
     ]
+    
+    return PaginatedApplications(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
 
 
 
 
-@router.get("/applications/assigned", response_model=list[ApplicationListItem])
+@router.get("/applications/assigned", response_model=PaginatedApplications)
 def my_assigned_applications(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
     """List applications assigned to the logged-in provider/doctor."""
     role, reg_id = _assigned_identity(db, user)
     if role is None or reg_id is None:
-        return []
+        return PaginatedApplications(items=[], total=0, page=page, page_size=page_size, total_pages=0)
 
     count_subq = (
         select(Attachment.application_id, func.count(Attachment.id).label("cnt"))
@@ -281,14 +307,27 @@ def my_assigned_applications(
         .where(owner_filter)
         .order_by(Application.created_at.desc())
     )
+    
+    # Count total records
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = db.execute(count_stmt).scalar() or 0
+    
+    # Calculate total pages
+    total_pages = (total + page_size - 1) // page_size
+    
+    # Apply pagination
+    offset = (page - 1) * page_size
+    stmt = stmt.offset(offset).limit(page_size)
+    
     rows = db.execute(stmt).all()
-    return [
+    items = [
         ApplicationListItem(
             id=app.id,
             application_no=app.application_no,
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
+            service_category=app.service_category,
             service_name=app.service_name,
             country=app.country,
             message=app.message,
@@ -299,6 +338,14 @@ def my_assigned_applications(
         )
         for app, cnt in rows
     ]
+    
+    return PaginatedApplications(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
 
 
 @router.get("/applications/assigned/{application_id}", response_model=ApplicationDetail)

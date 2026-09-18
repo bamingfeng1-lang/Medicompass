@@ -134,10 +134,7 @@ export default async function AdminDetailPage({
     [f.email, app.email || "—"],
     [f.phone, app.phone],
     [f.country, app.country || "—"],
-    [f.serviceCategory, app.serviceCategory || "—"],
-    [f.needType, app.needType],
     ...(app.serviceName ? [[si.colService, app.serviceName] as [string, string]] : []),
-    [f.destination, app.destination || "—"],
     [a.colTime, fmt(app.createdAt)],
   ];
 

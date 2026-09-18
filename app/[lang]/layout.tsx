@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { CookieConsent } from "@/components/CookieConsent";
 import { LOCALES, isLocale, type Locale } from "@/lib/brand";
 import { getDictionary } from "@/lib/dictionaries";
 import { getCurrentUser, getCurrentAdmin } from "@/lib/api";
@@ -29,6 +30,7 @@ export default async function LangLayout({
       <Navbar lang={lang} dict={dict} user={user} admin={admin} />
       <main className="flex-1">{children}</main>
       <Footer lang={lang} dict={dict} />
+      <CookieConsent dict={dict} />
     </div>
   );
 }

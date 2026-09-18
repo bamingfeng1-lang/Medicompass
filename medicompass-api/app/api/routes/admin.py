@@ -41,6 +41,7 @@ from app.schemas.application import (
     AssignPayload,
     AttachmentOut,
     FinalizePayload,
+    PaginatedApplications,
     StatusResult,
     StatusUpdate,
     SummarizeResult,
@@ -237,11 +238,13 @@ def admin_change_password(
 
 
 # ── applications ─────────────────────────────────────────────────────
-@router.get("/applications", response_model=list[ApplicationListItem])
+@router.get("/applications", response_model=PaginatedApplications)
 def list_applications(
     service_category: str | None = Query(default=None, alias="serviceCategory"),
     search: str | None = Query(default=None),
     status: str | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db),
     _: Admin = Depends(get_current_admin),
 ):
@@ -269,14 +272,27 @@ def list_applications(
                 Application.application_no.like(search_term),
             )
         )
+    
+    # Count total records
+    count_stmt = select(func.count()).select_from(stmt.subquery())
+    total = db.execute(count_stmt).scalar() or 0
+    
+    # Calculate total pages
+    total_pages = (total + page_size - 1) // page_size
+    
+    # Apply pagination
+    offset = (page - 1) * page_size
+    stmt = stmt.offset(offset).limit(page_size)
+    
     rows = db.execute(stmt).all()
-    return [
+    items = [
         ApplicationListItem(
             id=app.id,
             application_no=app.application_no,
             full_name=app.full_name,
             email=app.email,
             need_type=app.need_type,
+            service_category=app.service_category,
             service_name=app.service_name,
             country=app.country,
             message=app.message,
@@ -287,6 +303,14 @@ def list_applications(
         )
         for app, cnt in rows
     ]
+    
+    return PaginatedApplications(
+        items=items,
+        total=total,
+        page=page,
+        page_size=page_size,
+        total_pages=total_pages,
+    )
 
 
 @router.get("/applications/{application_id}", response_model=ApplicationDetail)
