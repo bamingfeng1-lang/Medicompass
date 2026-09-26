@@ -8,7 +8,7 @@ export function isLocale(value: string): value is Locale {
 
 export const BRAND = {
   nameEn: "Medicompass",
-  nameZh: "迈蒂康",
+  nameZh: "迈缔康",
   url: "medicomai.com",
   hq: { zh: "新加坡", en: "Singapore" },
   colors: {

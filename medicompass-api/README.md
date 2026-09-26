@@ -1,6 +1,6 @@
 # Medicompass API (FastAPI + MySQL)
 
-Python backend for the Medicompass (迈蒂康) cross-border medical-travel platform.
+Python backend for the Medicompass (迈缔康) cross-border medical-travel platform.
 It replaces the original Next.js API routes / Prisma layer; the Next.js app is now
 a pure presentation layer that calls these endpoints.
 

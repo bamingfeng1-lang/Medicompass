@@ -1,5 +1,5 @@
 -- =====================================================================
---  Medicompass (迈蒂康) — MySQL 业务库建表脚本
+--  Medicompass (迈缔康) — MySQL 业务库建表脚本
 --  目标后端：Python + MySQL 8.0+
 --  引擎/字符集：InnoDB + utf8mb4 (utf8mb4_general_ci)，完整支持中文/emoji
 --

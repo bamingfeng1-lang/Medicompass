@@ -34,7 +34,7 @@
       <div class="logo-area">
         <!-- 替换为您真实的原始Logo线上绝对路径 -->
         <img src="https://medicomai.com" alt="Medicompass" width="36" height="36" style="display:block; border:0;">
-        <span class="logo-text">Medicompass 迈蒂康</span>
+        <span class="logo-text">Medicompass 迈缔康</span>
       </div>
     </div>
 
@@ -62,7 +62,7 @@
       <!-- 中文部分 -->
       <div class="lang-section">
         <h2>尊敬的客户：</h2>
-        <p>您好！平台已成功收到您提交的#服务申请#意见申请及相关病历资料。感谢您对迈蒂康的信任。</p>
+        <p>您好！平台已成功收到您提交的#服务申请#意见申请及相关病历资料。感谢您对迈缔康的信任。</p>
         <p>面对健康的抉择，我们深知每一分钟的等待都至关重要。目前，我们的医学管理员正在对您上传的原始报告进行初步的整理与合规检查。</p>
         
         <div class="highlight-box">
@@ -72,7 +72,7 @@
         <p>在此期间，如果您有任何紧急补充资料或疑问，欢迎随时回复本封邮件。愿健康与您同行。</p>
         
         <div class="sign-off">
-          <strong>迈蒂康 (Medicompass) 全球服务团队</strong>
+          <strong>迈缔康 (Medicompass) 全球服务团队</strong>
         </div>
       </div>
 

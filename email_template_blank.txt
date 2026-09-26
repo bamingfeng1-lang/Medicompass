@@ -37,7 +37,7 @@
     <div class="header">
       <div class="logo-area">
         <img src="https://medicomai.com" alt="Medicompass" width="36" height="36" style="display:block; border:0;">
-        <span class="logo-text">Medicompass 迈蒂康</span>
+        <span class="logo-text">Medicompass 迈缔康</span>
       </div>
     </div>
 
@@ -50,7 +50,7 @@
       
       <!-- 统一的落款 -->
       <div class="sign-off">
-        <strong>迈蒂康 (Medicompass) 全球服务团队</strong><br>
+        <strong>迈缔康 (Medicompass) 全球服务团队</strong><br>
         <span style="font-size: 12px; color: #a0aec0;">The Medicompass Global Service Team</span>
       </div>
     </div>
