@@ -3,11 +3,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Medicompass 迈蒂康 · 全球跨境医旅平台",
-    template: "%s · Medicompass 迈蒂康",
+    default: "Medicompass 迈缔康 · 全球跨境医旅平台",
+    template: "%s · Medicompass 迈缔康",
   },
   description:
-    "Medicompass (迈蒂康) — the world's leading cross-border medical travel platform. AI-powered global medical travel and international second opinions.",
+    "Medicompass (迈缔康) — the world's leading cross-border medical travel platform. AI-powered global medical travel and international second opinions.",
   metadataBase: new URL("https://medicomai.com"),
   icons: {
     icon: "/logo.svg",

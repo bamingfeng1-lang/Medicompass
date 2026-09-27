@@ -46,6 +46,9 @@ export default async function AdminInquiriesPage({ params }: { params: { lang: s
         <span className="rounded-full bg-brand-gradient px-4 py-2 text-sm font-medium text-white">
           {si.navInquiries}
         </span>
+        <Link href={`/${lang}/admin/consults`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
+          {lang === "zh" ? "图文问诊" : "Consults"}
+        </Link>
       </div>
 
       {inquiries.length === 0 ? (

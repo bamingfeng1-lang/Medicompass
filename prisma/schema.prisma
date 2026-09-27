@@ -60,7 +60,444 @@ model Inquiry {
   message     String?
   lang        String   @default("zh")
   status      String   @default("new") // new | contacted
+  source      String   @default("web") // web | mobile
   createdAt   DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Mobile (iOS app) domain. A MobileUser is created on Sign in with Apple and
+// owns their chat history, uploaded reports, doctor consults, subscription and
+// registered push devices. Deleting a MobileUser cascades to all of it (GDPR).
+// ---------------------------------------------------------------------------
+
+model MobileUser {
+  id          String         @id @default(cuid())
+  appleUserId String?        @unique // Apple `sub` claim (null for email signups)
+  email       String?        @unique // login id for email/password accounts
+  passwordHash String?              // bcrypt hash; null for Apple-only accounts
+  name        String?
+  // Onboarding profile — medical basics collected after email verification.
+  gender          String?           // male | female | other
+  birthDate       DateTime?         // date of birth (age is derived from this)
+  bloodType       String?           // A | B | AB | O | unknown
+  allergies       String?           // free text, "" = none reported
+  medicalHistory  String?           // 既往病史 / chronic conditions, free text
+  profileCompleted Boolean       @default(false)
+  // Subscription tier. Solo: free | plus | pro | concierge.
+  // Family tiers (family_basic | family_concierge) live on the Family; a member's
+  // effective entitlements resolve to family.tier when familyId is set.
+  tier        String         @default("free")
+  // Family account membership (null = solo). "managed" profiles are login-less
+  // records a caregiver creates & acts on behalf of (场景 D/E 异地父母).
+  familyId    String?
+  family      Family?        @relation("FamilyMembers", fields: [familyId], references: [id])
+  familyRole  String         @default("owner") // owner | member | managed
+  managedById String?        // caregiver MobileUser id for login-less managed profiles
+  // Opt-in (PIPL/GDPR): may this user's health alerts (e.g. missed-dose) be
+  // pushed to their family caregivers? Default off for self-managing users;
+  // login-less "managed" profiles are alerted to their caregiver by design.
+  shareAlertsWithCaregivers Boolean @default(false)
+  createdAt   DateTime       @default(now())
+  threads     ChatThread[]
+  reports     MobileReport[]
+  consults    Consult[]
+  subscriptions Subscription[]
+  devices     MobileDevice[]
+  medications MobileMedication[]
+  doseLogs    MobileDoseLog[]
+  careTasks   MobileCareTask[]
+  vitals      MobileVitalReading[]
+  visits      MobileVisit[]
+  proactiveNotes ProactiveNote[]
+  patientInvites PatientInvite[]
+  wellnessPlans WellnessPlan[]
+  consents    Consent[]
+  profileAudits ProfileAudit[] @relation("ProfileAudits")
+  aiConfidenceLogs AiConfidenceLog[]
+
+  @@index([familyId])
+}
+
+// Append-only audit trail of medical-profile edits (合规：资料修改历史 / GDPR
+// accountability). `changes` is a JSON array of { field, from, to }; because it
+// can contain PHI (allergies / medicalHistory) it is field-encrypted at rest
+// (see lib/crypto-field.ts ENCRYPTED_FIELDS). Rows cascade-delete with the
+// subject profile; actorId/actorName are a historical snapshot of who edited.
+model ProfileAudit {
+  id        String     @id @default(cuid())
+  userId    String     // subject profile whose data changed
+  user      MobileUser @relation("ProfileAudits", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   String     // MobileUser id that made the change (self or caregiver)
+  actorName String?    // snapshot of the actor's display name at edit time
+  action    String     // create | update
+  changes   String     // JSON: [{ field, from, to }] — encrypted at rest
+  createdAt DateTime   @default(now())
+
+  @@index([userId])
+}
+
+// Audit log of the deterministic AI-answer confidence assessment (合规：AI 置信度
+//阈值 + 审计日志). One row per assessed assistant reply. `reasons` is a JSON array
+// of generic CODES ("high_stakes_intent" | "answer_uncertain") — NO PHI / free text,
+// so it is deliberately NOT field-encrypted. A low-confidence verdict also drives a
+// stronger "consult a doctor" advisory in the app. Rows cascade-delete with the user
+// (GDPR); userId is null for anonymous chat (not persisted here in practice).
+model AiConfidenceLog {
+  id            String      @id @default(cuid())
+  userId        String?
+  user          MobileUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  threadId      String?     // ChatThread the answer belongs to (loose ref, no FK)
+  locale        String      @default("en")
+  lowConfidence Boolean
+  reasons       String      // JSON array of reason codes
+  createdAt     DateTime    @default(now())
+
+  @@index([userId])
+  @@index([lowConfidence])
+}
+
+// Recorded user consent / authorization events (GDPR / PIPL 单独同意 & 可撤回).
+// One row per acceptance; `revokedAt` marks a withdrawal. Types:
+//   privacy | agreement | disclaimer | sensitive | crossborder
+model Consent {
+  id         String     @id @default(cuid())
+  userId     String
+  user       MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String
+  version    String     @default("1.0")
+  accepted   Boolean    @default(true)
+  acceptedAt DateTime   @default(now())
+  revokedAt  DateTime?
+
+  @@index([userId, type])
+}
+
+model ChatThread {
+  id        String     @id @default(cuid())
+  userId    String
+  user      MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  turns     ChatTurn[]
+
+  @@index([userId])
+}
+
+model ChatTurn {
+  id           String     @id @default(cuid())
+  threadId     String
+  thread       ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  role         String // user | assistant
+  content      String
+  reviewStatus String     @default("aiDone") // none | generating | aiDone | doctorReviewed
+  createdAt    DateTime   @default(now())
+
+  @@index([threadId])
+}
+
+model MobileReport {
+  id               String     @id @default(cuid())
+  userId           String
+  user             MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalName     String
+  storedPath       String
+  mimeType         String
+  size             Int
+  category         String     @default("report") // report | lab | imaging | visit | record
+  aiInterpretation String?
+  aiStatus         String     @default("pending") // pending | done | failed
+  aiError          String?
+  reviewed         Boolean    @default(false)
+  createdAt        DateTime   @default(now())
+
+  @@index([userId])
+}
+
+model Consult {
+  id        String           @id @default(cuid())
+  userId    String
+  user      MobileUser       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic     String
+  status    String           @default("new") // new | answered | closed
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  messages  ConsultMessage[]
+
+  @@index([userId])
+}
+
+model ConsultMessage {
+  id          String              @id @default(cuid())
+  consultId   String
+  consult     Consult             @relation(fields: [consultId], references: [id], onDelete: Cascade)
+  sender      String // user | doctor
+  text        String
+  // Responding clinician's disclosed identity (doctor replies only; all
+  // optional). Rendered to the patient only when actually provided — never
+  // fabricated. Not the patient's PHI, so not field-encrypted.
+  doctorName    String? // 医生姓名
+  doctorTitle   String? // 职称 e.g. 主任医师 / Attending physician
+  doctorDept    String? // 科室 / 医院
+  doctorLicense String? // 执业证号
+  createdAt   DateTime            @default(now())
+  attachments ConsultAttachment[]
+
+  @@index([consultId])
+}
+
+model ConsultAttachment {
+  id             String         @id @default(cuid())
+  consultMsgId   String
+  consultMessage ConsultMessage @relation(fields: [consultMsgId], references: [id], onDelete: Cascade)
+  originalName   String
+  storedPath     String
+  mimeType       String
+  size           Int
+  createdAt      DateTime       @default(now())
+
+  @@index([consultMsgId])
+}
+
+model Subscription {
+  id          String     @id @default(cuid())
+  userId      String
+  user        MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tier        String // plus | pro | concierge
+  productId   String
+  status      String     @default("active") // active | expired | refunded
+  originalTxId String?
+  expiresAt   DateTime?
+  source      String     @default("storekit") // storekit | sandbox
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+model MobileDevice {
+  id        String     @id @default(cuid())
+  userId    String
+  user      MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apnsToken String     @unique
+  env       String     @default("development") // development | production
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+}
+
+// One-time email verification codes for passwordless register/login. A code is
+// stored hashed; the newest non-expired row for an email wins on verify.
+model EmailCode {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// ---------------------------------------------------------------------------
+// 诊后管理 (post-diagnosis) domain: medication plans + dose logs, follow-up /
+// re-exam tasks, and self-reported vital readings. All owned by a MobileUser
+// and cascade-deleted with the account.
+// ---------------------------------------------------------------------------
+
+model MobileMedication {
+  id        String          @id @default(cuid())
+  userId    String
+  user      MobileUser      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nameEn    String
+  nameZh    String
+  dosage    String // "500 mg" / "1 片"
+  timingEn  String // "After meals"
+  timingZh  String // "餐后"
+  times     String // JSON-encoded slots, e.g. ["08:00","20:00"] (SQLite has no arrays)
+  stockDays Int             @default(0)
+  createdAt DateTime        @default(now())
+  doseLogs  MobileDoseLog[]
+
+  @@index([userId])
+}
+
+// One row per dose the user has checked off on a given local day. Absence of a
+// row means "not taken". @@unique keeps toggling idempotent.
+model MobileDoseLog {
+  id           String           @id @default(cuid())
+  userId       String
+  user         MobileUser       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  medicationId String
+  medication   MobileMedication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+  slot         String // "08:00"
+  day          String // local date key "2026-09-26"
+  createdAt    DateTime         @default(now())
+
+  @@unique([medicationId, slot, day])
+  @@index([userId])
+}
+
+model MobileCareTask {
+  id         String     @id @default(cuid())
+  userId     String
+  user       MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       String // revisit | recheck | followUp | rehab | metricLog
+  titleEn    String
+  titleZh    String
+  detailEn   String     @default("")
+  detailZh   String     @default("")
+  locationEn String?
+  locationZh String?
+  due        DateTime
+  done       Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+
+  @@index([userId])
+}
+
+model MobileVitalReading {
+  id         String     @id @default(cuid())
+  userId     String
+  user       MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       String // bloodGlucose | bloodPressure | weight | heartRate | temperature
+  value      Float // primary value (systolic for blood pressure)
+  secondary  Float? // diastolic for blood pressure
+  measuredAt DateTime   @default(now())
+
+  @@index([userId, kind])
+}
+
+// ---------------------------------------------------------------------------
+// 就诊记录 (visit records): a patient-authored record of a hospital visit or a
+// health checkup (体检), holding structured basic info plus photographed
+// reports / lab sheets as attachments. Owned by a MobileUser; cascades.
+// ---------------------------------------------------------------------------
+
+model MobileVisit {
+  id          String                  @id @default(cuid())
+  userId      String
+  user        MobileUser              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visitType   String                  @default("outpatient") // outpatient | emergency | inpatient | checkup | other
+  hospital    String                  @default("")
+  department  String                  @default("")
+  doctor      String                  @default("")
+  visitDate   DateTime
+  diagnosis   String                  @default("")
+  notes       String                  @default("")
+  createdAt   DateTime                @default(now())
+  attachments MobileVisitAttachment[]
+
+  @@index([userId])
+}
+
+model MobileVisitAttachment {
+  id           String      @id @default(cuid())
+  visitId      String
+  visit        MobileVisit @relation(fields: [visitId], references: [id], onDelete: Cascade)
+  originalName String
+  storedPath   String
+  mimeType     String
+  size         Int
+  createdAt    DateTime    @default(now())
+
+  @@index([visitId])
+}
+
+// ---------------------------------------------------------------------------
+// 健康档案计划 (wellness plan): an AI-generated diet + exercise plan derived from
+// the user's aggregated health record (基础信息 + 门诊/住院就诊 + 报告解读 + 指标 +
+// Apple Health 快照). Generated fire-and-forget and polled by the client, like
+// MobileReport interpretation. Generation consumes the aiChats monthly quota.
+// ---------------------------------------------------------------------------
+
+model WellnessPlan {
+  id           String     @id @default(cuid())
+  userId       String
+  user         MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale       String     @default("zh")
+  dietText     String     @default("") // 饮食建议
+  exerciseText String     @default("") // 锻炼建议
+  status       String     @default("pending") // pending | done | failed
+  error        String?
+  createdAt    DateTime   @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Accounts v2: family groups, usage metering, doctor & family invites, and
+// proactive-care notes. See lib/products.ts (TIER_ENTITLEMENTS) for the
+// per-tier quota / member-cap matrix these models enforce.
+// ---------------------------------------------------------------------------
+
+// A family group. Its tier (family_basic | family_concierge) sets the shared
+// AI/report quota pool and the member cap (3 / 7). Members carry familyId.
+model Family {
+  id        String         @id @default(cuid())
+  ownerId   String         // MobileUser.id of the owner (also a member)
+  tier      String         // family_basic | family_concierge
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  members   MobileUser[]   @relation("FamilyMembers")
+  invites   FamilyInvite[]
+}
+
+// One-time family join code (mirrors EmailCode). Owner generates; an existing
+// account redeems to join. Enforced against the tier's member cap at redeem.
+model FamilyInvite {
+  id         String    @id @default(cuid())
+  familyId   String
+  family     Family    @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  codeHash   String
+  expiresAt  DateTime
+  redeemedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([familyId])
+}
+
+// Monthly usage counter, keyed by billing scope + calendar month. A fresh row
+// per period is the "reset" — no cron needed. scopeType user|family, scopeId is
+// the MobileUser.id or Family.id. Unique per (scope, period).
+model UsageCounter {
+  id          String   @id @default(cuid())
+  scopeType   String   // user | family
+  scopeId     String
+  period      String   // "YYYY-MM" (calendar month)
+  aiChats     Int      @default(0)
+  reportPages Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([scopeType, scopeId, period])
+}
+
+// Doctor-created patient onboarding (场景A). A clinic pre-creates a MobileUser
+// with a care plan, then hands the patient this code to claim the account.
+model PatientInvite {
+  id           String     @id @default(cuid())
+  mobileUserId String
+  mobileUser   MobileUser @relation(fields: [mobileUserId], references: [id], onDelete: Cascade)
+  codeHash     String
+  expiresAt    DateTime
+  redeemedAt   DateTime?
+  createdAt    DateTime   @default(now())
+
+  @@index([mobileUserId])
+}
+
+// Proactive-care note surfaced on Home for 无忧 / 家庭无忧 tiers. Either
+// AI-generated (weekly check-in) or pushed by the care team.
+model ProactiveNote {
+  id        String     @id @default(cuid())
+  userId    String
+  user      MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text      String
+  source    String     @default("ai") // ai | team
+  createdAt DateTime   @default(now())
+
+  @@index([userId])
 }

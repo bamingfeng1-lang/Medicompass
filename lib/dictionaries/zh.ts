@@ -170,7 +170,7 @@ export const zh = {
       { step: "03", title: "专业二诊 / 确认", desc: "获取国际权威专家二诊意见，确认最优诊疗与出行方案。" },
       { step: "04", title: "全程履约保障", desc: "预约、翻译、支付、出行到售后，平台全程审核与陪伴。" },
     ],
-    whyEyebrow: "为什么选择迈蒂康",
+    whyEyebrow: "为什么选择迈缔康",
     whyTitle: "专业、透明、有温度的跨境医疗伙伴",
     why: [
       { title: "全球权威专家网络", desc: "覆盖肿瘤、心血管、骨科、神经等重点学科的国际顶尖专家。" },
@@ -189,7 +189,7 @@ export const zh = {
     ],
     soCta: "查看二诊流程",
     ctaTitle: "开启您的跨境医旅之旅",
-    ctaDesc: "无论您是患者、医疗机构还是医生，迈蒂康都欢迎您的加入。",
+    ctaDesc: "无论您是患者、医疗机构还是医生，迈缔康都欢迎您的加入。",
   },
   packages: {
     hero: {
@@ -322,10 +322,10 @@ export const zh = {
     },
   },
   about: {
-    badge: "关于迈蒂康",
+    badge: "关于迈缔康",
     title: "让全球优质医疗，触手可及",
     subtitle:
-      "Medicompass（迈蒂康）总部位于新加坡，致力于成为全球领先的跨境医旅平台。",
+      "Medicompass（迈缔康）总部位于新加坡，致力于成为全球领先的跨境医旅平台。",
     visionTitle: "愿景 Vision",
     vision: "做全球领先的跨境医旅平台。",
     missionTitle: "使命 Mission",
@@ -341,7 +341,7 @@ export const zh = {
     hqValue: "新加坡 Singapore",
   },
   register: {
-    hubBadge: "加入迈蒂康",
+    hubBadge: "加入迈缔康",
     hubTitle: "选择您的身份，开启合作",
     hubDesc: "无论您是寻求跨境医疗的患者、优质的医疗供应商，还是权威专家，我们都为您准备了专属入口。",
     roles: {

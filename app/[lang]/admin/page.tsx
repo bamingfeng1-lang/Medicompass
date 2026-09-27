@@ -64,6 +64,9 @@ export default async function AdminListPage({ params }: { params: { lang: string
         <Link href={`/${lang}/admin/inquiries`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
           {si.navInquiries}
         </Link>
+        <Link href={`/${lang}/admin/consults`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
+          {lang === "zh" ? "图文问诊" : "Consults"}
+        </Link>
       </div>
 
       {apps.length === 0 ? (

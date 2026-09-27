@@ -73,7 +73,7 @@ export function Logo({ variant = "full", className, invert = false }: LogoProps)
             invert ? "text-white/70" : "text-brand-gray"
           )}
         >
-          迈蒂康
+          迈缔康
         </span>
       </span>
     </span>
