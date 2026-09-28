@@ -4,6 +4,7 @@ import { saveUpload, isAllowed } from "@/lib/storage";
 import { interpretReport } from "@/lib/report-ai";
 import { countReportPages } from "@/lib/pageCount";
 import { resolveBillingScope, checkAndConsume, QuotaError, quotaExceeded } from "@/lib/entitlements";
+import { resolvePdfUploads, parsePasswords } from "@/lib/pdf";
 
 // GET  /api/mobile/reports        — list the user's reports (newest first)
 // POST /api/mobile/reports        — multipart upload (field "file"), kicks off
@@ -64,11 +65,19 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "unsupported_or_too_large" }, { status: 415 });
   }
 
+  // Screen an encrypted PDF BEFORE metering: decrypt in place given the right
+  // password, else 409 without storing the report or consuming quota.
+  const gate = await resolvePdfUploads([file], parsePasswords(form));
+  if (!gate.ok) {
+    return Response.json({ error: gate.error, fileNames: gate.fileNames }, { status: 409 });
+  }
+  const effectiveFile = gate.files[0];
+
   // Report-interpretation entitlement + monthly page quota. Free tier has 0
   // pages → the report is still stored, but AI interpretation is locked. Other
   // tiers consume `pages` from the (shared, for family) monthly pool; 402 over.
   const scope = await resolveBillingScope(user);
-  const pages = await countReportPages(file);
+  const pages = await countReportPages(effectiveFile);
   const canInterpret = scope.entitlements.reportPages > 0;
   if (canInterpret) {
     try {
@@ -79,7 +88,7 @@ export async function POST(req: Request): Promise<Response> {
     }
   }
 
-  const saved = await saveUpload(`report-${user.id}`, file);
+  const saved = await saveUpload(`report-${user.id}`, effectiveFile);
   const report = await prisma.mobileReport.create({
     data: {
       userId: user.id,

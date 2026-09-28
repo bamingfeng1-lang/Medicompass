@@ -70,11 +70,14 @@ export async function resolveProfile(req: Request): Promise<ProfileResolution> {
   if (!target) {
     return { ok: false, response: Response.json({ error: "profile_not_found" }, { status: 404 }) };
   }
-  // Authorized iff both are in the same family and the caller can manage (owner/member).
+  // Authorized iff same family, the caller can manage (owner/member), AND the
+  // target is either a login-less managed profile (owner-controlled) or a real
+  // member who authorized health sharing in their settings.
   const authorized =
     !!caller.familyId &&
     caller.familyId === target.familyId &&
-    (caller.familyRole === "owner" || caller.familyRole === "member");
+    (caller.familyRole === "owner" || caller.familyRole === "member") &&
+    (target.familyRole === "managed" || target.sharesHealthWithFamily);
   if (!authorized) {
     return { ok: false, response: Response.json({ error: "forbidden_profile" }, { status: 403 }) };
   }

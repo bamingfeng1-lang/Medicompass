@@ -2,6 +2,7 @@ import { resolveProfile } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/db";
 import { saveUpload, isAllowed } from "@/lib/storage";
 import { resolveBillingScope } from "@/lib/entitlements";
+import { buildMedicalRecordsText } from "@/lib/medical-records";
 
 // GET  /api/mobile/consult — list the user's text-based (图文) consults.
 // POST /api/mobile/consult — create a consult. multipart form:
@@ -44,6 +45,33 @@ export async function POST(req: Request): Promise<Response> {
   const text = String(form.get("text") ?? "").trim();
   if (!text) return Response.json({ error: "missing_text" }, { status: 400 });
 
+  // Optional health context the patient chose to share with the doctor. Health
+  // data (device Apple Health snapshot) arrives as text from the client; the
+  // health record (visits/reports) is assembled server-side so backend data
+  // isn't round-tripped through the device. Both are embedded — under clear
+  // headers — into the first user message so the reviewing doctor sees them
+  // in-thread and the patient sees exactly what they shared.
+  const locale = String(form.get("locale") ?? "").trim()
+    || (req.headers.get("accept-language") ?? "");
+  const zh = locale.startsWith("zh") || locale === "";
+  const healthData = String(form.get("healthData") ?? "").trim();
+  const syncHealthRecord = String(form.get("syncHealthRecord") ?? "") === "1";
+
+  let firstText = text;
+  if (healthData) {
+    firstText += zh
+      ? `\n\n【健康数据（用户同步）】\n${healthData}`
+      : `\n\n[Health data (shared by patient)]\n${healthData}`;
+  }
+  if (syncHealthRecord) {
+    const rec = await buildMedicalRecordsText(zh ? "zh" : "en", user.id);
+    if (rec) {
+      firstText += zh
+        ? `\n\n【健康档案（用户同步）】\n${rec}`
+        : `\n\n[Health record (shared by patient)]\n${rec}`;
+    }
+  }
+
   const files = form.getAll("file").filter((f): f is File => f instanceof File && isAllowed(f));
 
   const consult = await prisma.consult.create({
@@ -51,7 +79,7 @@ export async function POST(req: Request): Promise<Response> {
       userId: user.id,
       topic,
       status: "new",
-      messages: { create: { sender: "user", text } },
+      messages: { create: { sender: "user", text: firstText } },
     },
     include: { messages: true },
   });

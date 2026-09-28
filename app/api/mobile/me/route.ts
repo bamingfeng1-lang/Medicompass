@@ -11,11 +11,19 @@ export const dynamic = "force-dynamic";
 
 const GENDERS = ["male", "female", "other"];
 const BLOOD_TYPES = ["A", "B", "AB", "O", "unknown"];
+const ALCOHOL = ["unknown", "none", "occasional", "heavy"];
+const SMOKING = ["unknown", "never", "former", "current"];
+const HAS_CHILDREN = ["unknown", "no", "yes"];
 
 function shape(user: {
   id: string; name: string | null; email: string | null; tier: string;
   gender: string | null; birthDate: Date | null; bloodType: string | null;
   allergies: string | null; medicalHistory: string | null;
+  nickname: string | null; heightCm: number | null; weightKg: number | null;
+  country: string | null; city: string | null; alcohol: string | null;
+  smoking: string | null; hasChildren: string | null;
+  menstrualCycleDays: number | null; lastPeriodDate: Date | null;
+  avatarPath: string | null; avatarUpdatedAt: Date | null;
   profileCompleted: boolean; createdAt: Date;
   familyId: string | null; shareAlertsWithCaregivers: boolean;
 }) {
@@ -29,6 +37,18 @@ function shape(user: {
     bloodType: user.bloodType,
     allergies: user.allergies,
     medicalHistory: user.medicalHistory,
+    nickname: user.nickname,
+    heightCm: user.heightCm,
+    weightKg: user.weightKg,
+    country: user.country,
+    city: user.city,
+    alcohol: user.alcohol,
+    smoking: user.smoking,
+    hasChildren: user.hasChildren,
+    menstrualCycleDays: user.menstrualCycleDays,
+    lastPeriodDate: user.lastPeriodDate,
+    hasAvatar: user.avatarPath != null,
+    avatarUpdatedAt: user.avatarUpdatedAt,
     profileCompleted: user.profileCompleted,
     familyId: user.familyId,
     shareAlertsWithCaregivers: user.shareAlertsWithCaregivers,
@@ -49,6 +69,9 @@ export async function PATCH(req: Request): Promise<Response> {
   let body: {
     name?: string; gender?: string; birthDate?: string;
     bloodType?: string; allergies?: string; medicalHistory?: string;
+    nickname?: string; heightCm?: unknown; weightKg?: unknown;
+    country?: string; city?: string; alcohol?: string; smoking?: string;
+    hasChildren?: string; menstrualCycleDays?: unknown; lastPeriodDate?: string;
   };
   try {
     body = await req.json();
@@ -71,21 +94,56 @@ export async function PATCH(req: Request): Promise<Response> {
   const allergies = typeof body.allergies === "string" ? body.allergies.trim() : null;
   const medicalHistory = typeof body.medicalHistory === "string" ? body.medicalHistory.trim() : null;
 
+  // Extended profile fields use "provided-only" semantics: a key that is absent
+  // from the body leaves the column untouched (so onboarding, which sends only
+  // the 6 medical basics, never nulls them). `data`/`nextValues` collect the
+  // always-updated basics; extras are merged in when their key is present.
+  const data: Record<string, unknown> = {
+    name, gender, birthDate, bloodType, allergies, medicalHistory,
+    profileCompleted: true,
+  };
+  const nextValues: Record<string, unknown> = {
+    name, gender, birthDate, bloodType, allergies, medicalHistory,
+  };
+
+  const numInRange = (v: unknown, lo: number, hi: number): number | null => {
+    const n = Number(v);
+    return Number.isFinite(n) && n >= lo && n <= hi ? n : null;
+  };
+  const parseYMD = (v: unknown): Date | null => {
+    if (typeof v !== "string" || !v) return null;
+    const d = new Date(v);
+    return Number.isNaN(d.getTime()) ? null : d;
+  };
+  const setExtra = (key: string, value: unknown) => {
+    data[key] = value;
+    nextValues[key] = value;
+  };
+
+  if ("nickname" in body)
+    setExtra("nickname", typeof body.nickname === "string" ? body.nickname.trim() : null);
+  if ("heightCm" in body) setExtra("heightCm", numInRange(body.heightCm, 30, 300));
+  if ("weightKg" in body) setExtra("weightKg", numInRange(body.weightKg, 2, 500));
+  if ("country" in body)
+    setExtra("country", typeof body.country === "string" ? body.country.trim() : null);
+  if ("city" in body)
+    setExtra("city", typeof body.city === "string" ? body.city.trim() : null);
+  if ("alcohol" in body)
+    setExtra("alcohol", ALCOHOL.includes(String(body.alcohol)) ? String(body.alcohol) : null);
+  if ("smoking" in body)
+    setExtra("smoking", SMOKING.includes(String(body.smoking)) ? String(body.smoking) : null);
+  if ("hasChildren" in body)
+    setExtra("hasChildren", HAS_CHILDREN.includes(String(body.hasChildren)) ? String(body.hasChildren) : null);
+  if ("menstrualCycleDays" in body)
+    setExtra("menstrualCycleDays", numInRange(body.menstrualCycleDays, 10, 90));
+  if ("lastPeriodDate" in body) setExtra("lastPeriodDate", parseYMD(body.lastPeriodDate));
+
   // Field-level diff against the current row for the edit-history audit trail.
-  const nextValues = { name, gender, birthDate, bloodType, allergies, medicalHistory };
   const changes = diffProfile(user, nextValues);
 
   const updated = await prisma.mobileUser.update({
     where: { id: user.id },
-    data: {
-      name,
-      gender,
-      birthDate,
-      bloodType,
-      allergies,
-      medicalHistory,
-      profileCompleted: true,
-    },
+    data,
   });
 
   // Self-edit: actor == subject. Never blocks the response.

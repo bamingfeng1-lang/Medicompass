@@ -15,6 +15,7 @@ export async function GET(req: Request): Promise<Response> {
     threads, reports, consults, subscriptions, devices,
     medications, doseLogs, careTasks, vitals, visits, wellnessPlans,
     consents, proactiveNotes, usageCounters, profileAudits, aiConfidenceLogs,
+    adverseEventReports,
   ] = await Promise.all([
     prisma.chatThread.findMany({
       where: { userId: user.id },
@@ -41,6 +42,7 @@ export async function GET(req: Request): Promise<Response> {
     prisma.usageCounter.findMany({ where: { scopeType: "user", scopeId: user.id } }),
     prisma.profileAudit.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
     prisma.aiConfidenceLog.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
+    prisma.adverseEventReport.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" } }),
   ]);
 
   // Raw file bytes are never exported; strip on-disk paths, keep metadata.
@@ -86,6 +88,7 @@ export async function GET(req: Request): Promise<Response> {
       ...r,
       reasons: (() => { try { return JSON.parse(r.reasons); } catch { return r.reasons; } })(),
     })),
+    adverseEventReports,
   };
 
   return new Response(JSON.stringify(payload, null, 2), {

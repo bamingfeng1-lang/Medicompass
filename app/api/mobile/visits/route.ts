@@ -44,6 +44,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const visitTypeRaw = String(form.get("visitType") ?? "outpatient");
   const visitType = VISIT_TYPES.includes(visitTypeRaw) ? visitTypeRaw : "outpatient";
+  const patientName = String(form.get("patientName") ?? "").trim();
   const hospital = String(form.get("hospital") ?? "").trim();
   const department = String(form.get("department") ?? "").trim();
   const doctor = String(form.get("doctor") ?? "").trim();
@@ -54,7 +55,7 @@ export async function POST(req: Request): Promise<Response> {
   const files = form.getAll("file").filter((f): f is File => f instanceof File && isAllowed(f));
 
   const visit = await prisma.mobileVisit.create({
-    data: { userId: user.id, visitType, hospital, department, doctor, diagnosis, notes, visitDate },
+    data: { userId: user.id, visitType, patientName, hospital, department, doctor, diagnosis, notes, visitDate },
   });
 
   for (const file of files) {

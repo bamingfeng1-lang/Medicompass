@@ -1,5 +1,6 @@
 import { resolveProfile } from "@/lib/mobile-auth";
 import { prisma } from "@/lib/db";
+import { normalizeMealTiming, shapeMedication as shape } from "@/lib/medications";
 
 // GET  /api/mobile/medications  — the user's medication plan + which of today's
 //                                 doses are already logged (local day via ?day=).
@@ -8,31 +9,6 @@ import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function parseTimes(raw: string): string[] {
-  try {
-    const v = JSON.parse(raw);
-    return Array.isArray(v) ? v.map(String) : [];
-  } catch {
-    return [];
-  }
-}
-
-function shape(m: {
-  id: string; nameEn: string; nameZh: string; dosage: string;
-  timingEn: string; timingZh: string; times: string; stockDays: number;
-}) {
-  return {
-    id: m.id,
-    nameEn: m.nameEn,
-    nameZh: m.nameZh,
-    dosage: m.dosage,
-    timingEn: m.timingEn,
-    timingZh: m.timingZh,
-    times: parseTimes(m.times),
-    stockDays: m.stockDays,
-  };
-}
 
 export async function GET(req: Request): Promise<Response> {
   const prof = await resolveProfile(req);
@@ -68,6 +44,8 @@ export async function POST(req: Request): Promise<Response> {
   let body: {
     nameEn?: string; nameZh?: string; dosage?: string;
     timingEn?: string; timingZh?: string; times?: unknown; stockDays?: number;
+    quantity?: number; unit?: string; unitsPerDose?: number;
+    courseDays?: number; mealTiming?: string; barcode?: string;
   };
   try {
     body = await req.json();
@@ -92,6 +70,12 @@ export async function POST(req: Request): Promise<Response> {
       timingZh: (body.timingZh ?? "").trim(),
       times: JSON.stringify(times),
       stockDays: Number.isFinite(body.stockDays) ? Number(body.stockDays) : 0,
+      quantity: Number.isFinite(body.quantity) ? Math.max(0, Math.trunc(Number(body.quantity))) : 0,
+      unit: (body.unit ?? "").trim(),
+      unitsPerDose: Number.isFinite(body.unitsPerDose) && Number(body.unitsPerDose) > 0 ? Number(body.unitsPerDose) : 1,
+      courseDays: Number.isFinite(body.courseDays) ? Math.max(0, Math.trunc(Number(body.courseDays))) : 0,
+      mealTiming: normalizeMealTiming(body.mealTiming),
+      barcode: (body.barcode ?? "").trim(),
     },
   });
 

@@ -39,7 +39,7 @@ export default async function AdminInquiriesPage({ params }: { params: { lang: s
       </div>
 
       {/* section switcher */}
-      <div className="mb-8 flex gap-2">
+      <div className="mb-8 flex flex-wrap gap-2">
         <Link href={`/${lang}/admin`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
           {si.navApplications}
         </Link>
@@ -48,6 +48,9 @@ export default async function AdminInquiriesPage({ params }: { params: { lang: s
         </span>
         <Link href={`/${lang}/admin/consults`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
           {lang === "zh" ? "图文问诊" : "Consults"}
+        </Link>
+        <Link href={`/${lang}/admin/adverse-events`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
+          {lang === "zh" ? "不良事件" : "Adverse Events"}
         </Link>
       </div>
 

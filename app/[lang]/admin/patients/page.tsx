@@ -57,6 +57,7 @@ export default async function AdminPatientsPage({ params }: { params: { lang: st
         <Link href={`/${lang}/admin`} className={navPill}>{zh ? "二诊申请" : "Applications"}</Link>
         <Link href={`/${lang}/admin/inquiries`} className={navPill}>{zh ? "服务线索" : "Inquiries"}</Link>
         <Link href={`/${lang}/admin/consults`} className={navPill}>{zh ? "图文问诊" : "Consults"}</Link>
+        <Link href={`/${lang}/admin/adverse-events`} className={navPill}>{zh ? "不良事件" : "Adverse Events"}</Link>
         <span className="rounded-full bg-brand-gradient px-4 py-2 text-sm font-medium text-white">{zh ? "患者建档" : "Patients"}</span>
       </div>
 

@@ -3,7 +3,7 @@
 // Never leaks storedPath — attachment bytes are served via the [attId] route.
 
 export type VisitWithAttachments = {
-  id: string; visitType: string; hospital: string; department: string;
+  id: string; visitType: string; patientName: string; hospital: string; department: string;
   doctor: string; visitDate: Date; diagnosis: string; notes: string; createdAt: Date;
   attachments: {
     id: string; originalName: string; mimeType: string; size: number; createdAt: Date;
@@ -14,6 +14,7 @@ export function shapeVisit(v: VisitWithAttachments) {
   return {
     id: v.id,
     visitType: v.visitType,
+    patientName: v.patientName,
     hospital: v.hospital,
     department: v.department,
     doctor: v.doctor,

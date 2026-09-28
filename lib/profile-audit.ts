@@ -12,6 +12,16 @@ export const AUDITED_FIELDS = [
   "bloodType",
   "allergies",
   "medicalHistory",
+  "nickname",
+  "heightCm",
+  "weightKg",
+  "country",
+  "city",
+  "alcohol",
+  "smoking",
+  "hasChildren",
+  "menstrualCycleDays",
+  "lastPeriodDate",
 ] as const;
 
 export type AuditedField = (typeof AUDITED_FIELDS)[number];

@@ -18,7 +18,12 @@ function transporter(): Transporter | null {
   }
   const port = Number(process.env.SMTP_PORT ?? 465);
   const secure = (process.env.SMTP_SECURE ?? "true") !== "false";
-  cached = nodemailer.createTransport({ host, port, secure, auth: { user, pass } });
+  // Bounded timeouts so a stalled SMTP server can never hang the login handler
+  // indefinitely (the request would otherwise spin forever on the client).
+  cached = nodemailer.createTransport({
+    host, port, secure, auth: { user, pass },
+    connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 10000,
+  });
   return cached;
 }
 

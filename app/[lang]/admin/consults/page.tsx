@@ -52,7 +52,7 @@ export default async function AdminConsultsPage({ params }: { params: { lang: st
         <LogoutButton lang={lang} label={zh ? "退出" : "Log out"} />
       </div>
 
-      <div className="mb-8 flex gap-2">
+      <div className="mb-8 flex flex-wrap gap-2">
         <Link href={`/${lang}/admin`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
           {zh ? "二诊申请" : "Applications"}
         </Link>
@@ -62,6 +62,9 @@ export default async function AdminConsultsPage({ params }: { params: { lang: st
         <span className="rounded-full bg-brand-gradient px-4 py-2 text-sm font-medium text-white">
           {zh ? "图文问诊" : "Consults"}
         </span>
+        <Link href={`/${lang}/admin/adverse-events`} className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-brand-deep hover:text-brand-deep">
+          {zh ? "不良事件" : "Adverse Events"}
+        </Link>
       </div>
 
       {consults.length === 0 ? (

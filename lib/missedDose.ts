@@ -89,10 +89,11 @@ export async function detectMissedDoses(opts?: {
   return missed;
 }
 
-// Resolve who should be alerted about a patient's missed dose: the patient's own
-// devices plus, when the patient is a managed/member profile, the caregiver who
-// created them and the family owner.
-async function recipientsFor(userId: string): Promise<string[]> {
+// Resolve who should be alerted about a patient's medication event: the
+// patient's own devices plus, when the patient is a managed/member profile, the
+// caregiver who created them and the family owner. Shared by missed-dose and
+// low-stock sweeps.
+export async function recipientsFor(userId: string): Promise<string[]> {
   const ids = new Set<string>([userId]); // the patient's own devices, always
   const user = await prisma.mobileUser.findUnique({ where: { id: userId } });
   if (!user) return Array.from(ids);

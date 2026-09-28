@@ -84,6 +84,19 @@ model MobileUser {
   bloodType       String?           // A | B | AB | O | unknown
   allergies       String?           // free text, "" = none reported
   medicalHistory  String?           // 既往病史 / chronic conditions, free text
+  // Extended health profile — edited from Me → tap name (可编辑健康档案).
+  nickname        String?           // 昵称
+  heightCm        Float?            // 身高 cm
+  weightKg        Float?            // 体重 kg
+  country         String?           // 国家（app 默认「中国」）
+  city            String?           // 城市
+  alcohol         String?           // 喝酒频率: unknown | none | occasional | heavy
+  smoking         String?           // 抽烟频率: unknown | never | former | current
+  hasChildren     String?           // 是否生育（女性）: unknown | no | yes
+  menstrualCycleDays Int?           // 生理周期平均天数（女性）
+  lastPeriodDate  DateTime?         // 上次月经开始日（女性）
+  avatarPath      String?           // 头像文件路径 data/uploads/avatar-<userId>/...
+  avatarUpdatedAt DateTime?         // 头像缓存刷新 token
   profileCompleted Boolean       @default(false)
   // Subscription tier. Solo: free | plus | pro | concierge.
   // Family tiers (family_basic | family_concierge) live on the Family; a member's
@@ -99,6 +112,11 @@ model MobileUser {
   // pushed to their family caregivers? Default off for self-managing users;
   // login-less "managed" profiles are alerted to their caregiver by design.
   shareAlertsWithCaregivers Boolean @default(false)
+  // Opt-in (PIPL/GDPR): may family caregivers (owner/member) view & manage this
+  // real member's health data (meds, metrics, visit records)? Default off — the
+  // member must authorize in settings. Login-less "managed" profiles ignore this
+  // (always accessible to their owner by design).
+  sharesHealthWithFamily Boolean @default(false)
   createdAt   DateTime       @default(now())
   threads     ChatThread[]
   reports     MobileReport[]
@@ -109,15 +127,42 @@ model MobileUser {
   doseLogs    MobileDoseLog[]
   careTasks   MobileCareTask[]
   vitals      MobileVitalReading[]
+  metricItems MobileMetricItem[]
   visits      MobileVisit[]
+  visitJobs   MobileVisitJob[]
   proactiveNotes ProactiveNote[]
   patientInvites PatientInvite[]
   wellnessPlans WellnessPlan[]
+  diagnosticAdvices DiagnosticAdvice[]
   consents    Consent[]
   profileAudits ProfileAudit[] @relation("ProfileAudits")
   aiConfidenceLogs AiConfidenceLog[]
+  adverseEventReports AdverseEventReport[]
 
   @@index([familyId])
+}
+
+// Patient-submitted safety reports (合规：不良事件上报 / pharmacovigilance +
+// AI-safety). Covers a suspected adverse event, a drug reaction/side-effect, or a
+// harmful/incorrect AI answer. Deliberately NOT tier- or consent-gated — blocking a
+// safety report is the wrong failure mode. `description` is free text that may name
+// symptoms / drugs (PHI) so it is field-encrypted at rest (see lib/crypto-field.ts).
+// Rows cascade-delete with the reporting profile (GDPR). Feeds doctor review + AI
+// clinical validation. `status` is admin triage state.
+model AdverseEventReport {
+  id                String     @id @default(cuid())
+  userId            String
+  user              MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind              String     // ai-error | drug-reaction | adverse-event
+  severity          String     @default("unknown") // mild | moderate | severe | unknown
+  description       String     // free text — encrypted at rest
+  relatedTurnId     String?    // chat turn serverId when reporting an AI answer (loose ref)
+  relatedMedication String?    // drug name for drug-reaction reports
+  locale            String     @default("zh")
+  status            String     @default("new") // new | reviewed | closed
+  createdAt         DateTime   @default(now())
+
+  @@index([userId])
 }
 
 // Append-only audit trail of medical-profile edits (合规：资料修改历史 / GDPR
@@ -317,7 +362,13 @@ model MobileMedication {
   timingEn  String // "After meals"
   timingZh  String // "餐后"
   times     String // JSON-encoded slots, e.g. ["08:00","20:00"] (SQLite has no arrays)
-  stockDays Int             @default(0)
+  stockDays Int             @default(0) // legacy manual days-left; fallback when quantity==0
+  quantity     Int    @default(0) // remaining units; auto-decremented on dose check-off
+  unit         String @default("") // "片"/"粒"/"ml"/"袋" (display)
+  unitsPerDose Float  @default(1) // units per single dose (drives decrement & days-left)
+  courseDays   Int    @default(0) // course length in days (0 = ongoing)
+  mealTiming   String @default("") // structured: before|after|with|bedtime|""
+  barcode      String @default("") // captured barcode string (stored only, no lookup)
   createdAt DateTime        @default(now())
   doseLogs  MobileDoseLog[]
 
@@ -370,6 +421,40 @@ model MobileVitalReading {
   @@index([userId, kind])
 }
 
+// 关注指标 (custom metric items): abnormal indicators surfaced from checkup
+// reports / visit records that the user wants to track over time — beyond the 5
+// fixed vitals. Each item keeps a value history plus an optional next-check date.
+// Owned by a MobileUser; cascades.
+model MobileMetricItem {
+  id          String                @id @default(cuid())
+  userId      String
+  user        MobileUser            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String                // 指标项名 e.g. "尿酸" / "低密度脂蛋白"
+  unit        String                @default("") // display unit
+  targetLow   Float? // reference-range low (nullable)
+  targetHigh  Float? // reference-range high (nullable)
+  nextCheckAt DateTime? // 下一次检测时间 (nullable)
+  source      String                @default("manual") // manual | report | visit
+  ignored     Boolean               @default(false) // 忽略: hidden from the main list, recoverable
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  readings    MobileMetricReading[]
+
+  @@index([userId, ignored])
+}
+
+model MobileMetricReading {
+  id         String           @id @default(cuid())
+  itemId     String
+  item       MobileMetricItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  value      Float
+  note       String           @default("")
+  measuredAt DateTime
+  createdAt  DateTime         @default(now())
+
+  @@index([itemId])
+}
+
 // ---------------------------------------------------------------------------
 // 就诊记录 (visit records): a patient-authored record of a hospital visit or a
 // health checkup (体检), holding structured basic info plus photographed
@@ -381,6 +466,7 @@ model MobileVisit {
   userId      String
   user        MobileUser              @relation(fields: [userId], references: [id], onDelete: Cascade)
   visitType   String                  @default("outpatient") // outpatient | emergency | inpatient | checkup | other
+  patientName String                  @default("") // 就诊人 (free text; AI grouping key)
   hospital    String                  @default("")
   department  String                  @default("")
   doctor      String                  @default("")
@@ -406,6 +492,42 @@ model MobileVisitAttachment {
   @@index([visitId])
 }
 
+// 就诊记录 AI 后台整理任务. The AI batch-extract flow (photos → clustered draft
+// visit records) now runs server-side, fire-and-forget: the uploaded photos are
+// persisted to the job, extraction fills `drafts` (JSON), and the client is
+// notified via a bell badge. `reviewed` flips true once the user commits the
+// reviewed drafts into real MobileVisit rows. Unread = status "done" && !reviewed.
+model MobileVisitJob {
+  id        String               @id @default(cuid())
+  userId    String
+  user      MobileUser           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status    String               @default("pending") // pending | done | failed
+  locale    String               @default("zh")
+  error     String               @default("")
+  drafts    String               @default("") // VisitGroupDraft[] JSON once done
+  reviewed  Boolean              @default(false)
+  fileCount Int                  @default(0)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  files     MobileVisitJobFile[]
+
+  @@index([userId])
+}
+
+model MobileVisitJobFile {
+  id           String         @id @default(cuid())
+  jobId        String
+  job          MobileVisitJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  idx          Int
+  storedPath   String
+  mimeType     String
+  size         Int
+  originalName String
+  createdAt    DateTime       @default(now())
+
+  @@index([jobId])
+}
+
 // ---------------------------------------------------------------------------
 // 健康档案计划 (wellness plan): an AI-generated diet + exercise plan derived from
 // the user's aggregated health record (基础信息 + 门诊/住院就诊 + 报告解读 + 指标 +
@@ -423,6 +545,29 @@ model WellnessPlan {
   status       String     @default("pending") // pending | done | failed
   error        String?
   createdAt    DateTime   @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// AI 诊疗建议 (diagnostic advice): manual-refresh AI reasoning over the user's
+// 异常指标 (abnormal metrics, passed from the client) + 历史病例 (server-side
+// visits/reports/vitals). Produces three sections — 病情发展研判 / 预警与建议就诊科室 /
+// 复诊与定期监测. Same fire-and-forget + poll pattern as WellnessPlan; generation
+// consumes the aiChats monthly quota.
+// ---------------------------------------------------------------------------
+
+model DiagnosticAdvice {
+  id             String     @id @default(cuid())
+  userId         String
+  user           MobileUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locale         String     @default("zh")
+  assessmentText String     @default("") // 病情发展研判
+  alertText      String     @default("") // 预警与建议就诊科室
+  followUpText   String     @default("") // 复诊与定期监测
+  status         String     @default("pending") // pending | done | failed
+  error          String?
+  createdAt      DateTime   @default(now())
 
   @@index([userId, createdAt])
 }

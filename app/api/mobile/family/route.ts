@@ -11,12 +11,18 @@ export const dynamic = "force-dynamic";
 
 function shapeMember(m: {
   id: string; name: string | null; familyRole: string; managedById: string | null;
+  sharesHealthWithFamily: boolean;
 }) {
+  const managed = m.familyRole === "managed";
   return {
     id: m.id,
     name: m.name,
     role: m.familyRole, // owner | member | managed
-    managed: m.familyRole === "managed",
+    managed,
+    // Whether this member's health data is authorized for family caregivers to
+    // view: managed profiles always; real members only when they opted in.
+    sharesHealth: managed ? true : m.sharesHealthWithFamily,
+    accessible: managed || m.sharesHealthWithFamily,
   };
 }
 
@@ -43,6 +49,7 @@ export async function GET(req: Request): Promise<Response> {
       memberCap: ent.memberCap,
       entitlements: ent,
       usage,
+      sharesHealth: user.sharesHealthWithFamily,
       members: family.members.map(shapeMember),
     },
   });

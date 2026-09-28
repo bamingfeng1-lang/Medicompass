@@ -101,6 +101,7 @@ const ENCRYPTED_FIELDS: Record<string, string[]> = {
   MobileReport: ["aiInterpretation"],
   ConsultMessage: ["text"],
   ProfileAudit: ["changes"], // old→new snapshot may contain allergies/病史 PHI
+  AdverseEventReport: ["description"], // free text may name symptoms / drugs (PHI)
 };
 
 /** Nested relation → child model, so writes that create related rows inline
