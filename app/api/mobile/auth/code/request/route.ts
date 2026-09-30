@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
-import { sendVerificationCode, mailConfigured } from "@/lib/mailer";
+import { sendVerificationCode } from "@/lib/mailer";
 import { rateLimit, clientIp, tooManyRequests } from "@/lib/rate-limit";
 
 // POST /api/mobile/auth/code/request
